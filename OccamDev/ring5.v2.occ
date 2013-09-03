@@ -1,0 +1,30 @@
+
+
+PROC Node.v1 (CHAN OF INT Incoming.Chan,Outgoing.Chan, VAL INT Identity) 
+-- this was an empty comment
+  INT Local.Value, Incoming.Value :
+  SEQ
+    Local.Value := Identity
+    WHILE TRUE
+      SEQ
+        Local.Value := Local.Value +1 -- 1 sensing
+        PAR -- 2 communication
+          Outgoing.Chan ! Local.Value
+          Incoming.Chan ? Incoming.Value
+        SKIP -- 3 sleeping
+:
+
+
+
+PROC Sys(CHAN OF BYTE in,out,err)
+  -- channels definition
+  CHAN OF INT P1.P2, P2.P3, P3.P4, P4.P5, P5.P1:
+  -- concurrent ring construct
+  PAR
+    Node.v1 (P5.P1,P1.P2,1)  -- P1
+    Node.v1 (P1.P2,P2.P3,2)  -- P2
+    Node.v1 (P2.P3,P3.P4,3)  -- P3
+    Node.v1 (P3.P4,P4.P5,4)  -- P4
+    Node.v1 (P4.P5,P5.P1,5)  -- P5
+:
+

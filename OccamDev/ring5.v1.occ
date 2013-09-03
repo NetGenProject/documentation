@@ -1,0 +1,22 @@
+
+
+PROC Node.v1 (CHAN OF INT Incoming.Chan,Outgoing.Chan, VAL INT Identity) 
+-- this was an empty comment
+  INT Local.Value, Incoming.Value :
+  SEQ
+    Local.Value := Identity
+    WHILE TRUE
+      SEQ
+        Local.Value := Local.Value +1 -- 1 sensing
+        PAR -- 2 communication
+          Outgoing.Chan ! Local.Value
+          Incoming.Chan ? Incoming.Value
+        SKIP -- 3 sleeping
+:
+
+PROC Sys(CHAN OF BYTE in,out,err)
+
+  SEQ
+    SKIP
+:
+

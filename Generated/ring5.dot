@@ -1,0 +1,10 @@
+digraph ring5 {
+	rankdir=LR;
+	size="8,5" 
+	node [shape = circle];
+P1 -> P2 [ label = "P1.P2" color = "blue"  ] ;
+P2 -> P3 [ label = "P2.P3" color = "blue"  ] ;
+Head -> P1 [ label = "Head.P1" color = "blue"  ] ;
+P3 -> P4 [ label = "P3.P4" color = "blue"  ] ;
+P4 -> Head [ label = "P4.Head" color = "blue"  ] ;
+}

@@ -1,0 +1,1567 @@
+\documentclass[times]{book}
+\usepackage[latin1]{inputenc}
+\usepackage[english]{babel}
+\usepackage{a4}
+\usepackage{pslatex}
+\usepackage{listings}
+\usepackage{graphicx} 
+\usepackage{epsf}
+\usepackage{colordvi}
+
+\usepackage{color}
+
+\title{  \Huge Dynamic networks\\~\\
+\huge NetGen : objectives, installation, use, 
+and programming }
+\author{ Bernard Pottier\\
+Universit\'e de Bretagne Occidentale }
+\date{\today}
+
+
+\lstset{basicstyle=\ttfamily,
+  showstringspaces=false,
+  commentstyle=\color{red},
+  basicstyle=\footnotesize\ttfamily,
+  frame=L,
+  xleftmargin=\parindent,
+  keywordstyle=\color{blue}
+}
+
+\lstdefinestyle{customc}{
+  belowcaptionskip=1\baselineskip,
+  breaklines=true,
+  frame=L,
+  xleftmargin=\parindent,
+  language=C,
+  showstringspaces=false,
+  basicstyle=\footnotesize\ttfamily,
+  keywordstyle=\bfseries\color{green!40!black},
+  commentstyle=\itshape\color{purple!40!black},
+  identifierstyle=\color{blue},
+  stringstyle=\color{orange},
+}
+
+\lstdefinestyle{customasm}{
+  belowcaptionskip=1\baselineskip,
+  frame=L,
+  xleftmargin=\parindent,
+  language=[x86masm]Assembler,
+  basicstyle=\footnotesize\ttfamily,
+  commentstyle=\itshape\color{purple!40!black},
+}
+
+%\lstset{escapechar=@,style=customc}
+\begin{document}
+\maketitle
+
+%\chapter{Software presentation}
+
+%\section{Networks and connectivities}
+
+
+\chapter{Installation and first experiments}
+
+\section { Smalltalk, the underlying development system}
+
+NetGen has been developed using Smalltalk, a powerful object-oriented language. Smalltalk is available 
+on different platforms such as: VisualWorks, from Cincom, VisualAge, from IBM, Pharo, coming from
+free software community.
+
+Historically, the language has been created at Xerox PARC, and divulged with precise specifications of
+its syntax, intermediate code and tools. This has allowed universities and growing IT companies to
+implement virtual machines, or even hardware to execute the virtual image published by the PARC.
+
+Visualworks is a branch coming from the initial version with a lot of improvements and the capability
+to follow software and system progresses due to fast integration tools. 
+
+Pharo, the 'free Smalltalk'  is completely a new design.
+ 
+Most of the Smalltalk environments are interpreted, and thus, executed by a {\sl Virtual Machine} (VM).
+The VM is processor and system dependent. The object environment is located in large files 
+called {\sl Virtual Images}, because they reflect the abstraction of the object organization.
+Images are deployed inside the computer memory at run-time, and they are dumped into files
+to be restored when useful.  At the difference of a VM, the virtual image is more or less 
+platform independent.
+
+Practically, to run a Smalltalk environment, a user need to apply the VM to an image.
+
+An application written in Smalltalk is simply a dedicated image prepared by developers
+that is executed by a VM. This dedicated image does not have development tools and
+appears exactly as a normal application to an end user.
+
+NetGen, the software presented in this report, can be seen as an application. Due to the
+commercial nature of Visualworks, the only choice was to distribute as package, and let
+interested users to load them on a standard image.
+
+\subsection{What is needed}
+
+To work with NetGen it is necessary to prepare a specific environment:
+
+\begin{enumerate}
+\item  {\bf VisualWorks VM} : as distributed by Cincom
+\item  {\bf Visualworks image} : also from Cincom. These two items are installed 
+from {\sl personal use}, {\sl non-commercial distributions},  available  on 
+http://cincomsmalltalk.com.
+
+\item  {\bf NetGen packages} : downloaded from a server at University of Brest.
+A running VisualWorks system is necessary to access the data base
+on http://wsn.univ-brest.fr.
+\end{enumerate}
+
+As a benefit from VM technique, it is possible to run the software on common 
+platforms: Linux, MacOSX, Windows. However, external software/compilers  are used 
+as a target. Integration of these tools in the design flow necessitates:
+
+\begin{enumerate}
+\item {\bf kroc} : the Occam compiler from university of Kent. Kroc provides a concurrent
+process oriented environment that can execute network simulation on multi-core processors.
+Basically, networks are transformed on communicating process syntax, one thread per node.
+\item {\bf CUDA} : the Nvidia environment for Graphic Processing Units (GPUs) on which
+networks are mapped, one thread per node, communications executed in shared memory.
+\item {\bf Graphviz} : a well known network graphical presentation package that allows to draw
+networks for documentation, as example.
+\end{enumerate}
+
+\section{VisualWorks installation}
+
+The Cincom site proposes an evaluation ISO file for download, with a non commercial
+license. Read the statements and download the CDrom (if you agree).
+
+After this, it comes a 600Mo .iso file that can be used on your platform (we prefer Linux).
+This file must be mounted as a fake CDrom, generally by simply clicking the file icon.
+Installation is done by following the default choices of the CDrom. It can be 
+a good idea to setup the files in a system place rather than ones home directory
+(as example, /Developer, on MacOSX.
+
+On Linux, it is possible to proceed in from a terminal command  line by saying:
+
+\begin{verbatim}  
+sudo mount -o loop,exec  CSTxx.iso /mnt
+\end{verbatim}
+
+CSTxx.iso is replaced by the name of the downloaded file on the system, and /mnt is the local
+directory where the CDrom will appear ({\tt ls /mnt} will show the installation files). After
+this, you will type {\tt /mnt/installUnix} and follow the instructions.
+
+\paragraph{32 bits or 64 bits?}. As the processors are evolving, it was also necessary
+to evolve VMs to follow these progresses. On Linux, it is necessary to be aware
+of the system characteristics (type {\tt uname -a}). {\bf kroc} is still 32 bits, thus
+the best choice would be to remain with a 32 bits virtual machine, and virtual image.
+
+
+\section {Creating an initial environment }
+\label{sec:initialEnv}
+The last versions of VisualWorks propose project folder as a convenient way 
+to manage different development, thus different image. On MacOSX,
+a folder appears on the desktop that provides direct access to different environments.
+
+On Linux, our practice is to proceed in the following way:
+
+\begin{enumerate}
+\item {\bf create a project directory}: {\tt mkdir project1 ; cd project1}
+\item {\bf locate VisualWorks}: directory where  you put VW during its installation.
+As examples, {\tt /usr/local/vw7.9.1pu} for a system installation, or {\tt /home/myname/vw7.9.1pu}
+for an installation at {\tt myname} home directory.
+\item {\bf create a script} command to start a new image. Call it {\tt startInit} to recall
+that it start an initial environment.  The script is for {\sl bash}, to setup an environment variable,
+then to launch the virtual machine executable {\sl visual}, on the initial virtual image {\sl visualnc.im}.
+
+\begin{lstlisting}  [language=bash,caption={bash version}]
+#!/bin/bash
+export VISUALWORKS=/usr/local/vw7.8.1nc
+echo $VISUALWORKS
+${VISUALWORKS}/bin/linux86/visual ${VISUALWORKS}/image/visualnc.im
+\end{lstlisting}
+
+
+This script is for the 7.8.1 Visualworks home  installed at the system level,
+and not the {\tt /usr/local/vw7.9.1pu} that could be the choice for a recent VisualWorks.
+The VISUALWORKS variable is setup to point to this home. It is used inside
+Smalltalk to access lot of resources. Don't miss to configure it correctly!
+
+\item make the script executable, and run it:
+
+{\tt chmod +x startInit ; ./startInit}
+\end{enumerate}
+
+If everything is fine, the VM is up, showing two windows figure \ref{fig:startInit-initialEnv}.
+
+
+\begin{figure}[hbtp]
+\begin{center} 
+\includegraphics[width=8cm]{startInit-initialEnv.png}
+\caption{Initial environment}
+\label{fig:startInit-initialEnv}
+\end{center}
+\end{figure}
+ 
+
+\section {Creating a new project }
+\subsection {New image file creation }
+
+The process of creating a new environment is reproduced for each new project. Once the initial 
+environment is up, we save it to the new project name.
+
+The trick is simply to save the image at the current location, or to a newly created directory,
+thus creating a new image file. Figure 
+\ref{fig:startInit-newEnv} shows an image creation Dialog opened from {\sl $File>save$ $as$} menu.
+Notice the following points:
+\begin{itemize}
+\item Access to the current directory by the right button on the first line of Dialog.
+The default location shown on the button is the VISUALWORKS home which is not suitable as a working location.
+
+\item the image file name is changed to {\tt project1.im} to reflect the name of a new project.
+\end{itemize}
+After this, do a {\sl Save}, then using {\sl $File>Exit$}, quit the initial image without saving.
+ 
+\begin{figure}[hbtp]
+\begin{center} 
+\includegraphics[width=10cm]{startInit-newEnv.png}
+\caption{Creating a new image file {\sl project1.im} }
+\label{fig:startInit-newEnv}
+\end{center}
+\end{figure}
+
+
+
+
+\subsection {New script creation }
+
+Now, we have a new file called {\sl project1.im} that we ca use to host developments.
+Check its presence by listing the directory {\tt ls project1.*}. 
+
+It is more easy and secure to setup a new script file to launch our project. So, we copy startInit to startProject1,
+({\tt cp startInit startProject1}), and we modify startProject1 as follows:
+
+\begin{lstlisting}  [language=bash,caption={bash version}]
+#!/bin/bash
+export VISUALWORKS=/usr/local/vw7.8.1nc
+echo $VISUALWORKS
+${VISUALWORKS}/bin/linux86/visual ./project1.im
+\end{lstlisting}
+
+Then, as in section \ref{sec:initialEnv}, {\tt chmod +x startProject1 ; ./startProject1}, that launch 
+the new project safely.
+
+
+\subsection{Summary}
+
+\begin{itemize}
+\item Creation of a directory to host developments
+\item Two scripts to launch the initial environment, and to launch a new project environment
+\end{itemize}
+
+We just need to recall the files location, we can launch and quit the project, making the choice of
+saving modifications to a file or not.
+\section { Connecting to Store}
+
+
+Once the {\sl project1} environment is launched, it becomes possible to connect to software repository.
+This is done by the Store facilities in the main window. Observe the $Store$ menu.
+
+\subsection {Accessing a repository }
+
+Figure  \ref{fig:store-access} shows the Dialog allowing to connect to a package repository.
+The menu $Store>Connect$ $Repository$ will open it. The fields are filled with location and permissions to
+access the server at UBO. It is safe to save the connection to allow an easy reuse.
+Connection is normally fast, and release the Store menu quickly.
+
+\begin{figure}[hbtp]
+\begin{center} 
+\includegraphics[width=10cm]{store-access.png}
+\caption{Defining a repository access }
+\label{fig:store-access}
+\end{center}
+\end{figure}
+
+\subsection {Loading packages }
+
+Once a connection is valid, by using $Store>Published$ $items$, we can observe the database contents, select
+package, an load software. Figure \label{fig:store-load} shows how to proceed in the case of DistributedModeling:
+
+\begin{enumerate}
+\item select the name of a package on the left list
+\item watch the different versions appearing in the right list
+\item select one version
+\item open the version menu and says $Load$
+\end{enumerate}
+
+\begin{figure}[hbtp]
+\begin{center} 
+\includegraphics[width=10cm]{store-load.png}
+\caption{Choosing and loading packages}
+\label{fig:store-load}
+\end{center}
+\end{figure}
+
+The Store tool will retrieve packages and needed dependencies from the server (if these dependencies
+are correctly defined). This take time. At the end of the process, the NetGen window appears (figure  \ref{fig:netgen-initial}).
+Th Hotdraw window can be closed safely, this package is of marginal interest in the project.
+
+
+\subsection {Checking NetGen }
+\begin{figure}[hbtp]
+\begin{center} 
+\includegraphics[width=10cm]{netgen-initial.png}
+\caption{NetGen initial window }
+\label{fig:netgen-initial}
+\end{center}
+\end{figure}
+
+By selecting 2D Random, and Graphic layout, then by pushing the Generate button,  a random layout
+of 20 systems is produced, and connections are computed based on a minimum distance of 100 points.
+Figure \ref{fig:netgen-commented} shows a different case, where the number of systems has been
+increased to 40. The graphic window displays the resulting layout, with 5 networks and 3 isolated nodes:
+the bottom left view inside the control window states that 37 nodes are connected. 
+
+The edges in the graph represents possible connections between nodes, given a range of 100. Grey zone figures
+uncovered points, while white zones are always under control of a node.
+
+\begin{figure}[hbtp]
+\begin{center} 
+\includegraphics[width=10cm]{netgen-commented.png}
+\caption{NetGen : random network generation with 40 nodes}
+\label{fig:netgen-commented}
+\end{center}
+\end{figure}
+
+The full statistic for this sample quantifies the graph structure in relation with a surface
+where the network is produced.
+
+\begin{lstlisting}  
+genRange100Points40
+processus : 37
+min fanout : 1
+max fanout : 5
+channels   : 114
+coverageArea   : 368718
+percentArea   : 90
+\end{lstlisting}
+\section {Summary }
+
+\subsection{Knowledge status}
+At this point, it is  probably useful to save an image from the VisualWorks launcher window : $File>Save$.
+Knowledge  status is :
+\begin{enumerate}
+\item Development tools installation for VisualWorks,
+\item Connection to a package repository data base
+\item Loading NetGen development tools
+\item Checking NetGen functionality
+\end{enumerate}
+
+\subsection{More background, some useful tricks about Smalltalk}
+
+\begin{itemize}
+\item 
+The selection of  $Tools>Workspace$ inside the main window launcher, launches an additional
+window similar to a terminal. Inside this window, users can type and execute Smalltalk statements.
+
+Execution is obtained by selecting a piece of code, calling a pop-up menu (right click), selecting 
+$do it$, or $ print it$ (or $inspect$) inside this menu. Pay attention to the fact that the menu must be observed
+carefully to do a selection. By releasing the $print it$ option, the code is compiled, evaluated, and 
+the resulting value in variable $x$ is displayed in the Workspace.
+
+
+\begin{figure}[hbtp]
+\begin{center} 
+\includegraphics[width=10cm]{printIt.png}
+\caption{Programming in work-spaces}
+\label{fig:printIt}
+\end{center}
+\end{figure}
+ 
+\item 
+In a similar way, application windows can be opened, or data set can be prepared
+interactively. To launch a window similar to figure \ref{fig:netgen-commented}  , type {\tt UINetworkGeometry open}
+in a Workspace,
+and call $do it$ from the pop-up menu.
+
+\item 
+More about Smalltalk programming : the System Workspace window (figure \ref{fig:startInit-newEnv}) gives access to lot of contributions about the
+language and the system. The Smalltalk syntax is very simple, thus easy to learn: {\sl get started}\ldots 
+
+
+\end{itemize}
+
+\chapter{Building abstract networks}
+
+Our networks are abstractions appearing basically as graphs, grouping {\sl nodes} representing  actual systems, {\sl edges} representing communication links.
+Abstraction allows to cover lot of situations, from the nano scale to the universe, and lot of domains, such as distributed sensing, 
+distributed computing, communication systems, environment modeling, bio systems.
+
+Here, the focus is on wireless sensor networks design and validation in regards of practical situations in the environment.
+NetGen software {\sl upper services} have the following objectives:
+
+\begin{enumerate}
+\item Practical system description based on geometry.
+
+As example, from a map, one can decide sensor locations taking into account physical considerations, decide
+on a wireless technology, and infer workable communication links.
+
+{\sl Description can be achieved based on maps, or pictures. Alternatively, generators allow to produce 
+random distributions of different characteristics. A Text input format allows to exchange network topologies with external tools. }.
+
+\item Behaviour description.
+
+As example, nodes will execute programs, (1) to control and sense  locally  physical phenomena, (2) 
+to  contribute to the distributed system activities, such as collecting, transforming  data, sending alerts.
+
+
+{\sl Behaviour description follows currently the synchronous model that use discrete time boundaries 
+to make system evolutions. This technique is relevant for most of the sensor network technologies, 
+as example 802.15.4, or commercial Digimesh. This is because sensor systems need to go to sleep
+and wake up periodically.}.
+
+
+\item Validating a system behaviour.
+
+As example, the communication load implied by a particular topology, the latency and cost for producing
+diagnostics, energy cost of a particular algorithm, risks of failures, redundancy management.
+
+ 
+\item Code generation.
+
+Systems can be huge, and the order of several thousand of nodes is reached by practical applications.
+They are dynamic: critical systems are exposed to failures and mobility can be central in an application.
+{\sl Simulation } is a key point in validation to measure latency delays, risks, or power consumption.
+Code generation integrate local behaviours inside a network topology,   run the resulting simulation code, 
+and provide diagnostics.
+
+This is a compute intensive task where a number of steps must be executed by a number of nodes.
+
+{\sl 
+Further chapters will explain how to produce simulators for Graphic Accelerators, and for multi-threaded
+execution on multi-core processors, respectively from CUDA framework (x1000 processors), and
+Occam process oriented programs (x10 processors).}
+
+\item Preparing deployment.
+
+Once a system is validated, it is necessary to prepare an  equivalent behavior for the sensors. This is also
+code generation, and can be achieved in a similar way as for simulators.
+\end{enumerate}
+
+The following sections will describe existing functionality, and known challenges.
+
+
+\section{Network description}
+
+Network is described as a graph grouping nodes and communication links. In terms of data structures,
+a convenient  representation is:
+
+\begin{itemize}
+\item a global Dictionary holding nodes,
+\item for each link, an input node, and an output node.
+\item for each node, a name, an array of input links, and an array of output links.
+\end{itemize}
+
+This representation allows to retrieve quickly the available nodes, or a particular node,
+and from that node, direct neighbors, by traversing each link.
+
+\subsection{Textual description}
+
+The textual representation is a reflect of this organization. It appears in the right editor of NetGen window:
+
+
+\begin{itemize}
+\item  a title for the network, 
+\item a list of messages carried by the links, 
+\item  one line for each node.
+
+These lines are a sequence grouping
+\begin{itemize}
+\item  the process name,
+\item the neighborhood accessible by the output links, specified between braces, and separated by commas,
+\item the name of the program, or procedure executed by the node,
+\item node attributes
+\end{itemize}
+
+\end{itemize}
+
+As an illustration, the network presented  figure \ref{fig:netgen-commented}  has the following specification:
+  
+\begin{lstlisting}
+genRange100Points40
+
+messages none  defined. 
+P1 { P11, P13, P23, P24 } Node (31 @ 182) (100)
+P2 { P30 } Node (499 @ 40) (100)
+P3 { P4, P6, P7, P33, P37 } Node (179 @ 338) (100)
+P4 { P3, P7, P8, P31, P37 } Node (224 @ 269) (100)
+P5 { P20 } Node (424 @ 306) (100)
+P6 { P3, P7, P22, P33 } Node (227 @ 378) (100)
+P7 { P3, P4, P6, P37 } Node (173 @ 316) (100)
+P8 { P4, P22, P31, P33 } Node (293 @ 293) (100)
+P9 { P10, P15, P21, P39 } Node (413 @ 601) (100)
+P10 { P9, P15, P21, P39 } Node (410 @ 598) (100)
+P11 { P1, P23 } Node (57 @ 112) (100)
+P12 { P16, P22, P28 } Node (385 @ 440) (100)
+P13 { P1, P23, P24, P37 } Node (89 @ 216) (100)
+P14 { P32 } Node (269 @ 42) (100)
+P15 { P9, P10, P21 } Node (350 @ 638) (100)
+P16 { P12, P19, P22, P28 } Node (324 @ 448) (100)
+P17 { P30, P32 } Node (368 @ 76) (100)
+P18 { P38 } Node (153 @ 482) (100)
+P19 { P16, P28 } Node (289 @ 513) (100)
+P20 { P5 } Node (403 @ 283) (100)
+P21 { P9, P10, P15, P28, P39 } Node (386 @ 558) (100)
+P22 { P6, P8, P12, P16, P33 } Node (306 @ 386) (100)
+P23 { P1, P11, P13, P37 } Node (108 @ 171) (100)
+P24 { P1, P13, P35 } Node (18 @ 281) (100)
+P25 { P29, P34, P36 } Node (580 @ 175) (100)
+P28 { P12, P16, P19, P21 } Node (375 @ 487) (100)
+P29 { P25, P34, P36 } Node (560 @ 152) (100)
+P30 { P2, P17 } Node (420 @ 51) (100)
+P31 { P4, P8 } Node (279 @ 237) (100)
+P32 { P14, P17 } Node (281 @ 35) (100)
+P33 { P3, P6, P8, P22 } Node (250 @ 380) (100)
+P34 { P25, P29 } Node (537 @ 154) (100)
+P35 { P24 } Node (41 @ 314) (100)
+P36 { P25, P29 } Node (639 @ 172) (100)
+P37 { P3, P4, P7, P13, P23 } Node (145 @ 255) (100)
+P38 { P18 } Node (110 @ 436) (100)
+P39 { P9, P10, P21 } Node (457 @ 570) (100)
+\end{lstlisting}
+
+
+
+\subsection{Logic description}
+\label{sec:logicdes}
+For small size networks, a logic organization can be processed by an external program called
+Graphviz. On Linux system, packages are available, thus on an Ubuntu system, it should be
+sufficient to load it ({\tt apt-get install graphviz}). The input of this program is expressed 
+in the {\sl dot} syntax.
+
+To produce dot files, select {\sl Dot File} option which will produce a .dot file in the directory {\sl Generated/}.
+When {\sl Dot Graph} is selected, and where graphviz is available, the file is processed to produce
+a postscript representation that lot of viewers can read (see Figure \label{fig:genRange100Points40-rogne}).
+ 
+
+\begin{figure}[hbtp]
+\begin{center} 
+\includegraphics[width=12cm]{genRange100Points40-rogne.pdf}
+\caption{Logic organization as seen in {\sl graphviz}}
+\label{fig:genRange100Points40-rogne}
+\end{center}
+\end{figure}
+ 
+
+\subsection{Programming networks, and processing}
+\label{sec:ring5Def}
+The control window allows to save descriptions as .net text files, and to reload saved files.
+Processing these files can be done at any time by calling {\sl accept} function in 
+the editing facility. This will produce Dot files, Occam programs, CUDA programs
+when necessary.
+
+The .net files can also be produced externally, specified within the editor, or the network structure
+can be produced by programs. 
+
+As a sample experiment  a directional ring with 5 Nodes is specified as follows:
+
+\begin{lstlisting} 
+ring5
+
+messages none  defined. 
+Head { P1  } Node 
+P1 { P2 } Node  
+P2 { P3 } Node  
+P3 { P4 } Node  
+P4 { Head } Node 
+\end{lstlisting}
+
+\begin{figure}[hbtp]
+\begin{center} 
+\includegraphics[width=8cm]{ring5-rogne.pdf}
+\caption{Ring5}
+\label{fig:ring5}
+\end{center}
+\end{figure}
+
+\subsection{Building networks by program}
+
+{\sl To be completed later.}
+
+The section can be skipped in a first stage. it implies some Smalltalk programming: one to two pages
+with pieces of listings.
+
+\section {Regular networks}
+
+{\sl To be completed later.}
+
+ This function is called by selecting Grid rather than 2D Random, filling the range (200) and
+number of systems (40). The connectivity is computed on this basis..
+
+
+\begin{figure}[hbtp]
+\begin{center} 
+\includegraphics[width=8cm]{GridRange200Points40.png}
+\caption{Layout on a rectangular surface with 200pts range and 40 nodes (at most).}
+\label{fig:GridRange200Points40}
+\end{center}
+\end{figure}
+
+
+\section{Selecting a sensor layout from a map}
+
+Whereas the sensor network will be deployed, it is necessary to define sensing points,
+and expected connectivity between these points. Ranges produced by wireless technologies
+can be very different, very small for {\sl body area networks} to very large, country size applications.
+Most of the solutions use dedicated network architectures that compute and route information, 
+or standard solutions that support routing and sequencing of communications.
+In any case, the network topology is critical for two opposite reasons:
+
+\begin{itemize}
+\item reducing the number of communications is necessary to save energy and time,
+
+\item having enough redundancy in the routing capability is a solution in the case
+of failures (nodes or communications).
+\end{itemize}
+
+The frequency, volume and data rate of communications are also   points of interest, with
+critical effects for  
+some applications requiring high peek bandwidth. In other cases, frequency
+can be very low  
+with the critical problems being  energy and costs.
+
+
+We will use a medium size geographic map example to illustrate network design, 
+but anything else could apply (body description, nano fabric, etc\ldots).
+Figure \ref{fig:mekong} is a PNG satellite view coming from the Internet, that also displays
+at the bottom left. An assumption is that a practical sensing application needs to deploy
+wireless equipment to measure some environmental characteristic. We also suppose that
+this equipment has been selected to work on distances suitable to implement a network.
+As example, some 802,15,4 devices offer ranges from 20 to 40 km on the 900Mhz band.
+
+
+\begin{figure}[hbtp]
+\begin{center} 
+\includegraphics[width=8cm]{mekong.png}
+\caption{Sample image supposed to be stored as a PNG file in the working directory.
+The map has a scale useful to  tune a  range for wireless sensors.}
+\label{fig:mekong}
+\end{center}
+\end{figure}
+
+
+\subsection{Selecting sensor positions}
+
+In NetGen control window, use the $Options>Pick$ $points$ entry to  
+open a new {\sl Pick Points} window (figure \ref{fig:PickPoint1}). Then in this window, do a $File>Load$ $image$,
+to load the sample image. The mouse cursor change to a cross, and each 
+button pressed event will draw a circle around the selected position.
+
+
+
+
+\begin{figure}[hbtp]
+\begin{center} 
+\includegraphics[width=8cm]{PickPoints1.png}
+\caption{Pick point view}
+\label{fig:PickPoint1}
+\end{center}
+\end{figure}
+
+The slider on the top of the window, or the numeric field allow to change the range
+with the effect that circles around sensors increase, or decrease. when circles
+are large enough, sensors are supposed to establish radio contact ($distance(s1,s2) > range$).
+
+A problem is to adapt the expected wireless range to the image, and a  trick
+to do it is to install  fake sensor points on the scale rule (shown at the bottom of figure \ref{fig:mekong}), then to tune the slider
+to obtain a communication.
+
+
+\begin{figure}[hbtp]
+\begin{center} 
+\includegraphics[width=12cm]{PickPoints3.png}
+\caption{View showing sensor positions $P_i$), and connectivity.
+The scale has been adapted to 150 points for a distance of 20 km.
+}
+\label{fig:PickPoints3}
+\end{center}
+\end{figure}
+
+The $File$ menu has options   to save and reload  points position into external text files.
+
+\subsection{Building a net}
+
+Still in the $File$ menu, there is also a $Build net$ entry, that presents the network specification 
+inside the NetGen control window (see figure 
+\ref{fig:BuildNet1}).
+
+
+\begin{figure}[hbtp]
+\begin{center} 
+\includegraphics[width=12cm]{BuildNet1.png}
+\caption{Transfer of the network to NetGen window.
+}
+\label{fig:BuildNet1}
+\end{center}
+\end{figure}
+
+After transferring the specification, it is possible to edit it.
+As example it is a good idea to change its default name.
+It becomes also possible to use the code generation functions.
+Figure 
+\ref{fig:BuildNet2} presents a set of choice suitable for graphviz 
+and Occam generation.
+
+Notice that the call to these functions is done by the $accept$ entry
+of a pop-up menu, {\sl and not the Generate button} that will destroy
+the textual specification.
+\begin{figure}[hbtp]
+\begin{center} 
+\includegraphics[width=12cm]{BuildNet2.png}
+\caption{Generation of a logical network
+}
+\label{fig:BuildNet2}
+\end{center}
+\end{figure}
+
+
+\subsection{Logic presentation}
+
+The file has been dropped inside the Generated directory (section \ref{sec:logicdes})
+as a Postscript file (figure \ref{fig:mekong1Logic}).
+The {\sl rule fake network} appears as a parasite on the left
+of the application network.
+
+The logic file uses the same names as the $Pick Points$ view, and the textual presentation.
+
+\begin{figure}[hbtp]
+\begin{center} 
+\includegraphics[width=12cm]{mekong1Logic.pdf}
+\caption{Equivalent  logical network given a wireless range of 20 km
+}
+\label{fig:mekong1Logic}
+\end{center}
+\end{figure}
+
+
+
+\section{Summary}
+
+This chapter explains how to use maps or other images for planing sensors
+positions, and how to check the topology by generating a graph view.
+The Generated directory also has an architecture description file 
+expressed in the Occam Syntax.
+
+
+
+\chapter {Synchronous behaviours}
+
+At this point, the installation of kroc, the {\sl Kent Research Occam Compiler}
+should be considered. The first section will detail how to proceed on a Linux
+installation.
+
+\section{Installing kroc}
+
+The Occam compiler is developed at University of Kent, with its home page at
+{\tt http://projects.cs.kent.ac.uk/projects/kroc/trac/}.. Two branches are proposed:
+out of the same compiler frontend:
+\begin{itemize}
+\item kroc i386 compiler which makes use of a code generator for x86, thus enabling execution
+of programs on current multi-cores,
+\item Transterpreter Virtual Machine (TVM), which enables execution on micro-controllers.
+\end{itemize}
+
+The two branches are good targets for wireless sensor designs. The first is used
+to support concurrent simulation of networks, the second will support execution 
+at sensor level in a portable way.
+
+In this chapter, the i386 execution of simulations is the main concern, and our guide 
+is the web page provided by Kent (it would be sufficient to follow these steps).
+This section is just a check out of instructions provided at this location.
+
+\begin{enumerate}
+\item access installation page from {/sl Information for users}
+\item check your system\\
+\begin{lstlisting}
+uname -a
+Linux MyLinuxBox 3.2.0-51-generic #77-Ubuntu SMP Wed Jul 24 20:18:19 UTC 2013 x86_64 x86_64 x86_64 GNU/Linux
+\end{lstlisting}
+
+I have a 64bits installation supporting concurrent execution.
+\begin{lstlisting} 
+lsb_release -a
+LSB Version:    core-2.0-amd64:core-2.0-noarch:core-3.0-amd64:core-3.0-noarch:core-3.1-amd64:core-3.1-noarch:core-3.2-amd64:core-3.2-noarch:core-4.0-amd64:core-4.0-noarch
+Distributor ID: Ubuntu
+Description:    Ubuntu 12.04.2 LTS
+Release:        12.04
+Codename:       precise
+\end{lstlisting}
+
+This is Precise 12.04 LTS distribution of Ubuntu.
+\item Fetch packages dependencies useful for kroc installation on Ubuntu as explained in Debian/Ubuntu
+({\sl Linux:   If you're using Debian or Ubuntu, see DebianInstallation. }). For 32bits and 64bits installation, it is:
+\begin{lstlisting} 
+sudo apt-get install aptitude  bash gcc binutils gawk make automake autoconf pkg-config\
+libc6-dev libsdl1.2-dev libsdl-sound1.2-dev libgl1-mesa-dev   libmysqlclient15-dev libpng12-dev libxmu-dev \
+libxi-dev   libplayercore2-dev libplayerc2-dev libltdl3-dev   perl python xsltproc git
+\end{lstlisting} 
+
+Additional step to support 32bits programs on 64bits systems such as MyLinuxBox:
+\begin{lstlisting} 
+sudo apt-get install libc6-dev-i386 lib32gcc1 gcc-multilib
+\end{lstlisting} 
+
+And we can get back to the main installation page.
+
+\item Fetching kroc sources using git (fast):
+
+\begin{lstlisting}  
+git clone --depth 1 -b kroc-1.6 git://github.com/concurrency/kroc.git kroc-git
+\end{lstlisting}  
+
+This leaves a kroc-git additional directory with the sources. Change to this directory ({\tt cd kroc-git}).
+There is a {\tt build } command to configure the compiler sources, and, as mentioned in kroc web page
+one useful parameter would be to define the installation location.
+
+\item Configuration and compilation of kroc {\sl for end users} (we are end users),  it takes time:
+
+
+
+\begin{lstlisting}  
+./build --prefix=/usr/local/kroc
+\end{lstlisting}  
+
+On MyLinuxBox, we got errors, due to wrong  installation of graphics libraries.
+\begin{lstlisting} 
+occbuild --in-tree /home/bernard/Documents/netgenDoc/kroc-git --toolchain=kroc --library occGL.lib --include occGL.inc  \
+-lglut -lGLU -lGL  -lSM -lICE  -lX11 -lXext -lXmu -lXt -lXi    opengl_wrap.o
+/usr/bin/ld: cannot find -lglut
+/usr/bin/ld: cannot find -lGLU
+/usr/bin/ld: cannot find -lGL
+/usr/bin/ld: cannot find -lSM
+/usr/bin/ld: cannot find -lICE
+...
+\end{lstlisting} 
+
+A simple workaround is to start make with the ignore errors flag:
+{\tt .make -i
+}
+
+And the final diagnostic was :
+\begin{lstlisting} 
+KRoC has now been built.
+
+Modules enabled (33/50):
+  cif convert course dblmath dynproc file fmtout forall hostio hostsp http ioconv 
+maths occGL proc random raster rastergraphics rasterio rastertext selector shared_screen 
+snglmath sock solib splib ss stream string time trap ttyutil useful
+
+Modules disabled (17/50):
+  button cdx cspdrv graphics3d miniraster moa netbar occSDL occSDLsound occade occplayer ocuda player pony sdlraster udc video
+\end{lstlisting} 
+
+
+\item Now we install the programs in /usr/local/kroc,  by typing : {\tt sudo make -i install}.
+
+Checking the installation we see a kroc compiler, and two shell scripts to configure the environment:
+\begin{lstlisting} 
+ ls /usr/local/kroc/bin
+ilibr kmakef kroc kroc-setup.csh kroc-setup.sh mkoccdeps occ21 occamdoc occbuild tranx86 trapns
+\end{lstlisting} 
+
+\item Obtain access to the compiler and checking access (bash version):
+\begin{lstlisting} 
+MyLinuxBox: $ source  /usr/local/kroc/bin/kroc-setup.sh
+MyLinuxBox: $ which kroc
+/usr/local/kroc/bin/kroc 
+MyLinuxBox: $ echo $LD_LIBRARY_PATH
+/usr/local/kroc/lib
+\end{lstlisting} 
+
+As this setup is to be done for each session, it is convenient to copy the script
+inside the shell configuration file (edit {\tt ~/.bashrc}, as example).
+
+
+And finally, we can launch the kroc compiler
+\begin{lstlisting} 
+MyLinuxBox: $  kroc
+KRoC version 1.6.0 targeting x86_64-unknown-linux-gnu (driver V2.0)
+Usage: kroc [options] [occam sources/pre-compiled sources]
+Options:
+  -b,  --brief           Give brief occ21 error messages
+  -c,  --compile         Compile source to objects, do not link
+  -s,  --strict          Strict checking mode
+  -S,  --stoperror       Compile in STOP error mode
+  -d                     Enable post-mortem debugging
+  -di                    Enable insert debugging
+  -e                     Enable user-defined channels
+  -h,  --help            Print this message and exit
+....
+\end{lstlisting} 
+
+
+\end{enumerate}
+
+\section{Checking Occam compiler: Hello world! }
+
+Samples to learn Occam programming are available under the examples directory
+for each module. Basic Occam examples are accessible in ./modules/course/examples
+and ./modules/course/exercises
+under  the kroc-git directory.
+
+\begin{lstlisting} 
+MyLinuxBox: $ cat hello_seq_world.occ
+PROC hello.world (CHAN BYTE keyboard?, screen!, error!)
+  --{{{
+  VAL []BYTE greeting IS "Hello World*c*n":
+  SEQ i = 0 FOR SIZE greeting
+    screen ! greeting[i]
+  --}}}
+:
+\end{lstlisting} 
+
+\begin{itemize}
+\item Build your own Occam directory : {\tt mkdir ~/OccamDev }
+\item Copy example files there : {\tt cp hello\_seq\_world.occ ~/OccamDev }
+\item Change to this directory :  {\tt cd ~/OccamDev }
+\item Compile by hand : {\tt kroc hello\_seq\_world.occ }
+\item Execute : {\tt  ./hello\_seq\_world \\
+Hello World
+}
+\end{itemize}
+
+Below is a commented version of the program. In Occam
+the program structure is defined by indentation of 2 spaces. This
+is visible for the body of the procedure, starting at VAL line,
+and for the loop, just below the SEQ statement.
+
+\begin{lstlisting}  
+-- start a comment
+PROC hello.world (CHAN BYTE keyboard?, screen!, error!)
+-- define a procedure named hello.world
+-- with 3 communication links (channels carrying bytes) 
+-- associated to Linux i/o standard descriptors
+  --{{{
+-- this was an empty comment
+  VAL []BYTE greeting IS "Hello World*c*n":
+-- define a constant array of bytes with a string value, including CR
+  SEQ i = 0 FOR SIZE greeting
+-- sequential loop starting at i=0 with length of greeting occurrences
+    screen ! greeting[i]
+-- output a char to the screen channel
+  --}}}
+:
+-- end of procedure mark.
+\end{lstlisting} 
+
+
+\section{Parallel construct and channels in Occam}
+
+Coming back to the topic of network simulation, this section will construct
+a concurrent program suitable for the directional ring displayed figure \ref{fig:ring5}.
+Each node in the ring could represent a sensor. Sensors common behaviour is to execute
+an infinite loop for:
+\begin{enumerate}
+\item sensing, loading some status variables with values observed locally,
+\item communications
+\begin{enumerate}
+\item sending information to direct neighbors,
+\item receiving information from neighbors,
+\end{enumerate}
+\item sleeping for an agreed fixed period
+\end{enumerate}
+
+\subsection {Sample ring5 behaviour }
+
+Let us start our example as a very simple program. Each sensor activity is represented
+by a process, and each process executes the same program, defined as a procedure
+{\tt Node.v1}. Communication links are represented by Occam channels carrying integers.
+To distinguish sensor from each other, it is necessary to provide a unique identifier {\tt Identity}.
+
+Then, as sensing is supposed to produce some result in a local variable {\tt Local.Value},
+we will simply increment this variable. 
+
+To communicate, we pass the variable to one of our next neighbor, and receive the value 
+from our previous neighbor.
+
+This {\sl behaviour} is programmed in a {\tt ring5.v1.occ} file as follows:
+
+
+\begin{lstlisting}  
+PROC Node.v1 (CHAN OF INT Incoming.Chan,Outgoing.Chan, VAL INT Identity)  
+  INT Local.Value, Incoming.Value :
+  SEQ
+    Local.Value := Identity
+    WHILE TRUE
+      SEQ
+        Local.Value := Local.Value +1 -- 1 sensing
+        PAR -- 2 communication
+          Outgoing.Chan ! Local.Value
+          Incoming.Chan ? Incoming.Value
+        SKIP -- 3 sleeping
+:
+\end{lstlisting} 
+
+Notice that step 2 is programmed with a PAR construct over sending and receiving.
+We don't want to define an order for activities that are concurrent. Furthermore,
+programming sequential communications would lead to a dead-lock in the
+simulated ring, Occam channels being blocking channels: communication is resolved
+as the 2 processes reach a synchronization point.
+The concurrent construct finishes with the last branch, as a {\sl barrier} condition.
+
+To check the grammatical correctness of this program, we can add an empty 
+main activity, just after the {\tt Node.v1} procedure definition:
+
+\begin{lstlisting}  
+PROC Sys(CHAN OF BYTE in,out,err)
+  SEQ
+    SKIP
+:
+\end{lstlisting}  
+
+Then, we compile our file {\tt ring5.v1.occ}, and we execute the result:
+
+\begin{lstlisting}  
+MyLinuxBox: $ kroc ring5.v1.occ
+Warning-occ21-ring5.v1.occ(17)- parameter err is not used
+Warning-occ21-ring5.v1.occ(17)- parameter out is not used
+Warning-occ21-ring5.v1.occ(17)- parameter in is not used 
+MyLinuxBox: $  ./ring5.v1
+MyLinuxBox: $ 
+\end{lstlisting} 
+
+This programs does nothing since the SKIP statement denotes an empty process.
+
+\subsection {Sample ring5 architecture}
+\label{sec:simpleRigV2}
+
+To obtain a more convincing ring, we need to define a ring architecture having
+5 nodes, and 5 communication links.
+This is done by replacing the the Sys definition by a more complete one
+inside a new file  {\tt ring5.v2.occ}.
+
+
+\begin{lstlisting}  
+PROC Sys(CHAN OF BYTE in,out,err)
+  -- channels definition
+  CHAN OF INT P1.P2, P2.P3, P3.P4, P4.P5, P5.P1:
+  -- concurrent ring construct
+  PAR
+    Node.v1 (P5.P1,P1.P2,1)  -- P1
+    Node.v1 (P1.P2,P2.P3,2)  -- P2
+    Node.v1 (P2.P3,P3.P4,3)  -- P3
+    Node.v1 (P3.P4,P4.P5,4)  -- P4
+    Node.v1 (P4.P5,P5.P1,5)  -- P5
+:
+\end{lstlisting} 
+
+Now we compile and execute. This will produce a program with an infinite loop
+to be killed. Notice that each channel is used 2 times,  in   input and output parameter
+positions. Kroc check correctness of the architecture with two user process for
+reading and writing.
+
+\begin{lstlisting}  
+MyLinuxBox: $ kroc ring5.v2.occ
+Warning-occ21-ring5.v2.occ(19)- parameter err is not used
+Warning-occ21-ring5.v2.occ(19)- parameter out is not used
+Warning-occ21-ring5.v2.occ(19)- parameter in is not used
+MyLinuxBox: $ ./ring5.v2
+\end{lstlisting} 
+
+\subsection {Ring 5 has a synchronous behaviour}
+
+Each process has its own control loop, but the PAR communication implementation
+guarantees that none of them can take much progress against the neighbors. Every 
+process is in the same turn as the other ones.
+
+The simulation is executed under Occam micro-kernel controller called CCSP,
+that can be multi threaded and distributed on several processor cores.
+The behaviour is semantically equivalent to what happens in a wireless network
+whatever is the protocol used in the MAC layer (time division TDMA, CSMA,
+acknowledged or not).
+
+This simulation also obeys to synchronous distributed algorithms methodology,
+that bring lots of opportunities for defining how the sensor network will
+implement services and overcome difficulties.
+
+\section{Observing execution, simulation traces}
+
+The program in section \ref{sec:simpleRigV2} does not produce any
+usable output. To allow observation of its behaviour, we need 
+some external print out on what is happening.
+
+Unfortunately, printing in text on a terminal requires sharing the terminal,
+thus synchronization of processes willing to print. This can be overcome 
+with graphics presentation, but let us see what we can do about sharing i/os.
+
+We have seen section  that Occam program have channels mapped on
+file descriptors. In the case of Ring5, the {\tt stdout} descriptor must be
+written by our 5 processes. This is achieved by a multiplexer, and there
+is the ALT construct of Occam that allows to take into account 5 channels
+selecting one of them which appears to be ready.
+
+ALT has an entry for channel to be inspected. A ready channel value
+is read in a variable, an after this, an action is taken.
+As an example let us send two channels {\tt c.in.1 c.in.2} into one channel
+ {\tt c.out} :
+
+
+\begin{lstlisting} 
+CHAN OF BYTE c.in.1, c.in.2, c.out:
+BYTE char:
+SEQ i=0 FOR MaxTurns
+  ALT
+    c.in.1 ? char
+      c.out! char
+    c.in.2 ? char
+      c.out! char
+\end{lstlisting} 
+
+
+\begin{figure}[hbtp]
+\begin{center} 
+\includegraphics[width=6cm]{mux2.png}
+\caption{Multiplexer on 2 channels
+}
+\label{fig:mux2}
+\end{center}
+\end{figure}
+
+Normally, the construct is non determinist, meaning that one channel
+is selected at random. Also, only one of the ready channels is taken
+for each resolved ALT, and the construct block until one of its entry is ready.
+
+
+\subsection {Programming a trace multiplexer }
+\label{sec:ring5mux}
+The procedure Mux below shows a construct for 
+a fixed number of nodes (MaxNodes) looping
+synchronously MaxTurns times.
+
+\begin{lstlisting} 
+#USE "course.lib"
+-- enables to use formatted printing procedures, out.number(..)
+VAL INT MaxNodes IS 5:
+-- we have 5 nodes
+
+VAL INT MaxTurns IS 10:
+-- we will do 10 rounds
+
+-- Mux is our observer in the system 
+PROC Mux([]CHAN OF BYTE muxTab, CHAN OF BYTE out)
+-- muxTab is an array of input channels
+-- its size is managed by the Occam compiler
+-- out is the output channel
+  BYTE char:  
+-- input char
+  SEQ i=0 FOR  (MaxNodes * MaxTurns)
+    ALT i=0 FOR SIZE muxTab
+-- fetch the real size of the array
+      muxTab[i] ? char
+-- block until one of the input is ready
+-- i is the index of the selected ready channel
+        SEQ 
+          out.number(i,4,out)
+          -- print the index of the channel  
+           out ! '*t'
+          -- print a tab
+         out ! char
+          -- print the char
+          WHILE char <> '*n'
+          -- loop to the end of the line
+            SEQ
+              muxTab[i] ? char
+              out ! char
+              -- read char on the channel and print it
+:
+\end{lstlisting} 
+
+This code is suitable to trace MaxNodes nodes, each of them
+writing on an entry of a table, a full line closed by an end of line.
+ 
+\subsection {Ring behavior with a  trace }
+\label{sec:ring5behav}
+As we want to watch what is happening in each process, we need to
+add a channel to the Mux into each process, and to use this
+channel inside the internal loop. As we have restricted the Mux to MaxTurns
+rounds, we also need to exchange the infinite loop to 
+a restricted sequence. This is the modified Node.v2 procedure:
+
+
+\begin{lstlisting}  
+PROC Node.v2 (CHAN OF INT Incoming.Chan,Outgoing.Chan, VAL INT Identity, CHAN OF BYTE To.Mux)  
+  INT Local.Value, Incoming.Value :
+  SEQ
+    Local.Value := Identity
+    WHILE TRUE
+      SEQ
+        Local.Value := Local.Value +1 -- 1 sensing
+        PAR -- 2 communication
+          Outgoing.Chan ! Local.Value
+          Incoming.Chan ? Incoming.Value
+        SKIP -- 3 sleeping
+        out.number(Local.Value,0,To.Mux)
+        To.Mux ! '*n'
+        -- trace the value of the local variable and send CR
+:
+\end{lstlisting} 
+
+\subsection {Ring architecture with trace multiplexer }
+\label{sec:ringArchiv3}
+
+Now we implement the full program with:
+\begin{enumerate}
+\item Mux procedure as shown section \ref{sec:ring5mux}, then
+\item Node procedure from section \ref{sec:ring5behav}
+\end{enumerate}
+
+And we need to complete the process system from section \ref{sec:simpleRigV2} by declaring channels from processes to the trace collector,
+and add these channels in the parallel construct branches. It is also needed to call the Mux with
+its array of input channels and the system stdout access (see figure 
+\ref{fig:mux3}):
+
+
+\begin{lstlisting}  
+PROC Sys(CHAN OF BYTE in,out,err)
+  -- channels definition
+  CHAN OF INT P1.P2, P2.P3, P3.P4, P4.P5, P5.P1:
+  [MaxNodes] CHAN OF BYTE To.Mux.Tab:
+  -- concurrent ring construct
+  PAR
+    Mux(To.Mux.Tab,out)
+    Node.v2 (P5.P1,P1.P2,1,To.Mux.Tab[1-1])  -- P1
+    Node.v2 (P1.P2,P2.P3,2,To.Mux.Tab[2-1])  -- P2
+    Node.v2 (P2.P3,P3.P4,3,To.Mux.Tab[3-1])  -- P3
+    Node.v2 (P3.P4,P4.P5,4,To.Mux.Tab[4-1])  -- P4
+    Node.v2 (P4.P5,P5.P1,5,To.Mux.Tab[5-1])  -- P5
+:
+\end{lstlisting} 
+
+The source can be compiled asking a link with the course library, 
+then executed filtering the 10 first lines.
+ 
+\begin{lstlisting} 
+MyLinuxBox $ kroc -lcourse ring5.v3.occ
+Warning-occ21-ring5.v3.occ(53)- parameter err is not used
+Warning-occ21-ring5.v3.occ(53)- parameter in is not used
+MyLinuxBox $ ./ring5.v3 | head -10
+   4    6
+   0    2
+   1    3
+   2    4
+   0    3
+   1    4
+   3    5
+   4    7
+   2    5
+   0    4
+\end{lstlisting} 
+
+
+\begin{figure}[hbtp]
+\begin{center} 
+\includegraphics[width=8cm]{mux3.png}
+\caption{Complete Ring5 architecture with trace multiplexer
+}
+\label{fig:mux3}
+\end{center}
+\end{figure}
+
+
+If we want to see the sequence of numbers output by node 1,
+we can use grep to filter this node as well:
+
+\begin{lstlisting} 
+MyLinuxBox $  ./ring5.v3 | grep '^ *1' 
+   1    3
+   1    4
+   1    5
+   1    6
+   1    7
+   1    8
+   1    9
+   1    10
+   1    11
+   1    12
+\end{lstlisting} 
+
+\section{Architectures and Behaviors in NetGen framework}
+
+In section \ref{sec:ring5Def} we have shown how to produce graphs, and Occam
+description too. It is time to come back to the initial ring example and to watch what 
+comes out from the generator. The files produced describes architectures in a generic
+way. Whatever is the network, we should be able to run our distributed behavior on it.
+The {\tt Generated/} directory contains the ring architecture in the {\tt ring5.occ} file.
+Let us comment its contents in a simplified way.
+
+\subsection{Occam architecture description from NetGen}
+
+There are 2 major differences with code detailed  in section \label{sec:ringArchiv3}:
+\begin{itemize}
+\item the program has been split in 2 files, one for architecture {\tt ring5.occ}, and one
+for behavior  {\tt nodes-test-include.occ}. The first one (generated) includes the second one
+(written by hand).
+\item instead of listing all the channels in procedure parameters, we group them into
+tables, and pass these tables as parameters. PROC Ring5 thus define input and output
+group of channels, and pass them when starting the process:
+
+\begin{lstlisting} 
+  Head.out IS [ Head.P1 ]:
+  Head.in IS [ P4.Head ]:
+  -- and later
+  Node(Head.in, Head.out,0, toMux [0])
+\end{lstlisting} 
+
+A big advantage in doing this is that we can have different connectivity
+for different processes, and the connectivity can become very large.
+
+This will be demonstrated later on large network examples.
+\end{itemize}
+
+\begin{lstlisting} 
+#USE "course.lib"  -- support for printing
+VAL INT MaxFanOut IS 1: --max number of channels per node
+VAL INT MaxNodes IS 5: -- max number of nodes
+
+#INCLUDE "nodes-test-include.occ"
+-- includes the file where the behaviour is located
+-- this file must contains definitions for procedures Node and Mux
+-- plus the diam.proto type for communication links
+
+PROC ring5(CHAN OF BYTE stdin, stdout, stderr)
+   -- Channel declarations
+  CHAN OF diam.proto Head.P1:
+  CHAN OF diam.proto P1.P2:
+  CHAN OF diam.proto P2.P3:
+  CHAN OF diam.proto P3.P4:
+  CHAN OF diam.proto P4.Head:
+
+  -- Channel table declaration for nodes
+  Head.out IS [ Head.P1 ]:
+  Head.in IS [ P4.Head ]:
+  P1.out IS [ P1.P2 ]:
+  P1.in IS [ Head.P1 ]:
+  P2.out IS [ P2.P3 ]:
+  P2.in IS [ P1.P2 ]:
+  P3.out IS [ P3.P4 ]:
+  P3.in IS [ P2.P3 ]:
+  P4.out IS [ P4.Head ]:
+  P4.in IS [ P3.P4 ]:
+
+  -- Program Body
+  [MaxNodes]CHAN OF BYTE toMux:
+  PAR
+    Node(Head.in, Head.out,0, toMux [0])
+    Node(P1.in, P1.out,1, toMux [1])
+    Node(P2.in, P2.out,2, toMux [2])
+    Node(P3.in, P3.out,3, toMux [3])
+    Node(P4.in, P4.out,4, toMux [4])
+    Mux(toMux,stdout)
+     -- End of program body
+:
+\end{lstlisting} 
+ 
+\subsection {Behaviour description, first approach }
+
+We know copy our previous behavior in a  {\tt nodes-test-include.occ}, and noticing
+that we receive array of channels, we modify the Node procedure, using the
+first entry of these arrays.
+
+It is also necessary to declare a  {\tt diam.proto} type as being an INT, and
+to edit the Node procedure with cast and correct declaration of variables.
+
+This is a first version of the behavior file:
+\begin{lstlisting}
+DATA TYPE diam.proto IS INT:
+VAL INT MaxTurns IS 10:
+
+PROC Mux([]CHAN OF BYTE muxTab, CHAN OF BYTE out)
+  BYTE char:  
+  SEQ i=0 FOR  (MaxNodes * MaxTurns)
+    ALT i=0 FOR SIZE muxTab
+      muxTab[i] ? char
+        SEQ 
+          out.number(i,4,out)
+          out ! '*t'
+          out ! char
+          WHILE char <> '*n'
+            SEQ
+              muxTab[i] ? char
+              out ! char
+:
+
+PROC Node([]CHAN OF diam.proto Incoming.Chan,Outgoing.Chan, VAL INT Identity, CHAN OF BYTE To.Mux)  
+  INT Local.Value: 
+  diam.proto Incoming.Value:
+  SEQ
+    Local.Value := Identity
+    SEQ i=0 FOR MaxTurns 
+      SEQ
+        Local.Value := Local.Value +1 -- 1 sensing
+        PAR -- 2 communication
+          Outgoing.Chan[0] ! (diam.proto Local.Value)
+          Incoming.Chan[0] ? Incoming.Value
+        SKIP -- 3 sleeping
+        out.number(Local.Value,0,To.Mux)
+        To.Mux ! '*n'
+        -- trace the value of the local variable
+: 
+\end{lstlisting} 
+
+The file to compile is the architecture, the execution produces the same result as in section 
+\ref{sec:ringArchiv3}.
+
+\begin{lstlisting} 
+MyLinuxBox $ ls
+nodes-test-include.occ  ring5.occ
+MyLinuxBox $ grep INC  ring5.occ
+#INCLUDE "nodes-test-include.occ"
+bernard@PedelBP:~/Documents/netgenDoc/Ring5$ kroc -lcourse ring5.occ
+Warning-occ21-ring5.occ(34)- parameter stderr is not used
+Warning-occ21-ring5.occ(34)- parameter stdin is not used
+MyLinuxBox $ ./ring5 | head -8
+   4    5
+   0    1
+   1    2
+   2    3
+   0    2
+   1    3
+   3    4
+   4    6
+\end{lstlisting} 
+
+\section {Summary : flow for generated bidirectional ring }
+Let us review specification and architecture code generation on the case of 
+a bidirectional 4 nodes ring. We will need to modify  the behavioral part of the 
+program, and will be ready for final statements on using  code generation
+for any network.
+
+\subsection {Specification and drawing }
+
+This network will be called BiDirRing4. It is processed in the same way as section \ref{sec:ring5Def},
+asking for Occam generation and graphviz generation.
+
+\begin{lstlisting} 
+BiDirRing4
+messages none  defined. 
+P1 { P2, P4 } Node
+P2 { P3, P1 } Node 
+P3 { P4, P2  } Node  
+P4 { P1, P3  } Node  
+\end{lstlisting} 
+
+
+\begin{figure}[hbtp]
+\begin{center} 
+\includegraphics[width=8cm]{BiDirRing4.png}
+\caption{Logic organization for 4 nodes Bi-directional ring}
+\label{fig:BiDirRing4}
+\end{center}
+\end{figure}
+
+
+\subsection {Occam resulting architecture}
+
+The Generated directory contains the architecture description {\tt BiDirRing4.occ} from which is extracted
+the code below (shortened). One can notice that channel arrays now contain 2 links rather than one
+({\tt   P1.out IS [ P1.P2,P1.P4 ]:}).
+
+\begin{lstlisting} 
+-- processus : 4
+-- min fanout : 2
+-- max fanout : 2
+-- channels   : 8
+ 
+#USE "course.lib"
+
+
+VAL INT MaxFanOut IS 2:
+VAL INT MaxNodes IS 4:
+
+#INCLUDE "nodes-test-include.occ"
+
+PROC BiDirRing4(CHAN OF BYTE stdin, stdout, stderr)
+   -- Channel declarations
+  CHAN OF diam.proto P1.P2,P1.P4:
+  CHAN OF diam.proto P2.P3,P2.P1:
+  CHAN OF diam.proto P3.P4,P3.P2:
+  CHAN OF diam.proto P4.P1,P4.P3:
+
+  -- Channel table declaration for nodes
+  P1.out IS [ P1.P2,P1.P4 ]:
+  P1.in IS [ P2.P1,P4.P1 ]:
+  P2.out IS [ P2.P3,P2.P1 ]:
+  P2.in IS [ P1.P2,P3.P2 ]:
+  P3.out IS [ P3.P4,P3.P2 ]:
+  P3.in IS [ P2.P3,P4.P3 ]:
+  P4.out IS [ P4.P1,P4.P3 ]:
+  P4.in IS [ P1.P4,P3.P4 ]:
+
+  -- Program Body
+  [MaxNodes]CHAN OF BYTE toMux:
+  PAR
+    Node(P1.in, P1.out,0, toMux [0])
+    Node(P2.in, P2.out,1, toMux [1])
+    Node(P3.in, P3.out,2, toMux [2])
+    Node(P4.in, P4.out,3, toMux [3])
+    Mux(toMux,stdout)
+     -- End of program body
+:
+\end{lstlisting} 
+
+\subsection{General formulation for behavior}
+
+The need is to show how to read and write several channels
+rather than one. To allow this, it is needed to provide as many buffers
+as there are input and output links. The maximum connectivity in
+the network is known in a constant MaxFanOut. Thus, we can dimension and
+control these buffers.
+
+As we are sending from buffers, it is also necessary to copy state values,
+or produce messages in the buffers, and similarly, we will need to collect
+and examine incoming messages to update node status.
+
+Data type diam.proto, and procedure Mux does not change.
+An updated Node procedure appears as follows in a new version of {\tt nodes-test-include.occ}:
+
+\begin{lstlisting} 
+PROC Node([]CHAN OF diam.proto Incoming.Chan,Outgoing.Chan, VAL INT Identity, CHAN OF BYTE To.Mux)  
+  [MaxFanOut] INT Local.Values:  -- buffers for outgoing messages
+  [MaxFanOut] diam.proto Incoming.Value: -- buffers for incoming
+  INT Local.Value:
+  SEQ
+    Local.Value := Identity
+    SEQ i=0 FOR MaxTurns 
+      SEQ
+        Local.Value := Local.Value +1 -- 1 sensing
+        SEQ i=0 FOR MaxFanOut -- copy our state to outgoing buffers
+          Local.Values[i]:= Local.Value
+        PAR -- 2 communication
+          PAR index = 0 FOR MaxFanOut -- send in parallel
+            Outgoing.Chan[index] ! (diam.proto Local.Values[index])
+          PAR index = 0 FOR MaxFanOut -- receive in parallel
+            Incoming.Chan[index] ? Incoming.Value[index]
+        out.number(Local.Value,0,To.Mux) -- trace some state
+        To.Mux ! '*n'
+:
+\end{lstlisting} 
+
+Compile and execute in a specific directory {\tt BiDirRing4}:
+
+\begin{lstlisting} 
+MyLinuxBox $ ls
+BiDirRing4  BiDirRing4.occ  nodes-test-include.occ
+MyLinuxBox $ kroc -lcourse BiDirRing4.occ
+Warning-occ21-BiDirRing4.occ(32)- parameter stderr is not used
+Warning-occ21-BiDirRing4.occ(32)- parameter stdin is not used
+MyLinuxBox $ ./BiDirRing4 | head -6
+   3    4
+   0    1
+   1    2
+   2    3
+   0    2
+   1    3
+\end{lstlisting} 
+
+\subsection {Exercise }
+
+Verify that you can produce a trace for an 8 nodes bidirectional ring
+for the same behaviour..
+
+
+
+\tableofcontents
+\end{document}
+

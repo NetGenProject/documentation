@@ -1,0 +1,13 @@
+digraph BiDirRing4 {
+	rankdir=LR;
+	size="8,5" 
+	node [shape = circle];
+P1 -> P2 [ label = "P1.P2" color = "blue"  ] ;
+P1 -> P4 [ label = "P1.P4" color = "blue"  ] ;
+P2 -> P3 [ label = "P2.P3" color = "blue"  ] ;
+P2 -> P1 [ label = "P2.P1" color = "blue"  ] ;
+P3 -> P4 [ label = "P3.P4" color = "blue"  ] ;
+P3 -> P2 [ label = "P3.P2" color = "blue"  ] ;
+P4 -> P1 [ label = "P4.P1" color = "blue"  ] ;
+P4 -> P3 [ label = "P4.P3" color = "blue"  ] ;
+}

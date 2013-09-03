@@ -1,0 +1,65 @@
+#USE "course.lib"
+-- enables to use formated printing procedures, out.number(..)
+VAL INT MaxNodes IS 5:
+-- we have 5 nodes
+
+VAL INT MaxTurns IS 10:
+-- we will do 10 rounds
+
+-- Mux is our observer in the system 
+PROC Mux([]CHAN OF BYTE muxTab, CHAN OF BYTE out)
+-- muxTab is an array of input channels
+-- its size is managed by the Occam compiler
+-- out is the output channel
+  BYTE char:  
+-- input char
+  SEQ i=0 FOR  (MaxNodes * MaxTurns)
+    ALT i=0 FOR SIZE muxTab
+-- fetch the real size of the array
+      muxTab[i] ? char
+-- block until one of the input is ready
+-- i is the index of the selected ready channel
+        SEQ 
+          out.number(i,4,out)
+          -- print the index of the channel  
+          out ! '*t'
+          -- print a tab
+          out ! char
+          -- print the char
+          WHILE char <> '*n'
+          -- loop to the end of the line
+            SEQ
+              muxTab[i] ? char
+              out ! char
+              -- read char on the channel and print it
+:
+
+PROC Node.v2 (CHAN OF INT Incoming.Chan,Outgoing.Chan, VAL INT Identity, CHAN OF BYTE To.Mux)  
+  INT Local.Value, Incoming.Value :
+  SEQ
+    Local.Value := Identity
+    SEQ i=0 FOR MaxTurns 
+      SEQ
+        Local.Value := Local.Value +1 -- 1 sensing
+        PAR -- 2 communication
+          Outgoing.Chan ! Local.Value
+          Incoming.Chan ? Incoming.Value
+        SKIP -- 3 sleeping
+        out.number(Local.Value,0,To.Mux)
+        To.Mux ! '*n'
+        -- trace the value of the local variable
+:
+  
+PROC Sys(CHAN OF BYTE in,out,err)
+  -- channels definition
+  CHAN OF INT P1.P2, P2.P3, P3.P4, P4.P5, P5.P1:
+  [MaxNodes] CHAN OF BYTE To.Mux.Tab:
+  -- concurrent ring construct
+  PAR
+    Mux(To.Mux.Tab,out)
+    Node.v2 (P5.P1,P1.P2,1,To.Mux.Tab[1-1])  -- P1
+    Node.v2 (P1.P2,P2.P3,2,To.Mux.Tab[2-1])  -- P2
+    Node.v2 (P2.P3,P3.P4,3,To.Mux.Tab[3-1])  -- P3
+    Node.v2 (P3.P4,P4.P5,4,To.Mux.Tab[4-1])  -- P4
+    Node.v2 (P4.P5,P5.P1,5,To.Mux.Tab[5-1])  -- P5
+:

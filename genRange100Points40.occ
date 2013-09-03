@@ -1,0 +1,260 @@
+
+-- processus : 37
+-- min fanout : 1
+-- max fanout : 5
+-- channels   : 110
+
+
+--generated  at 29 août 2013 15:30:59
+--generic synchronous network model
+--Bernard Pottier. UBO
+
+VAL [37][3]BYTE NetProcess IS [   "P1 ", -- id: 1
+  "P2 ", -- id: 2
+  "P3 ", -- id: 3
+  "P4 ", -- id: 4
+  "P5 ", -- id: 5
+  "P6 ", -- id: 6
+  "P7 ", -- id: 7
+  "P8 ", -- id: 8
+  "P9 ", -- id: 9
+  "P10", -- id: 10
+  "P11", -- id: 11
+  "P12", -- id: 12
+  "P13", -- id: 13
+  "P14", -- id: 14
+  "P15", -- id: 15
+  "P16", -- id: 16
+  "P17", -- id: 17
+  "P18", -- id: 18
+  "P19", -- id: 19
+  "P20", -- id: 20
+  "P21", -- id: 21
+  "P22", -- id: 22
+  "P23", -- id: 23
+  "P24", -- id: 24
+  "P25", -- id: 25
+  "P28", -- id: 26
+  "P29", -- id: 27
+  "P30", -- id: 28
+  "P31", -- id: 29
+  "P32", -- id: 30
+  "P33", -- id: 31
+  "P34", -- id: 32
+  "P35", -- id: 33
+  "P36", -- id: 34
+  "P37", -- id: 35
+  "P38", -- id: 36
+  "P39"]:
+
+VAL [37][4]BYTE NetProcedure IS [   "Node", -- id: 1
+  "Node", -- id: 2
+  "Node", -- id: 3
+  "Node", -- id: 4
+  "Node", -- id: 5
+  "Node", -- id: 6
+  "Node", -- id: 7
+  "Node", -- id: 8
+  "Node", -- id: 9
+  "Node", -- id: 10
+  "Node", -- id: 11
+  "Node", -- id: 12
+  "Node", -- id: 13
+  "Node", -- id: 14
+  "Node", -- id: 15
+  "Node", -- id: 16
+  "Node", -- id: 17
+  "Node", -- id: 18
+  "Node", -- id: 19
+  "Node", -- id: 20
+  "Node", -- id: 21
+  "Node", -- id: 22
+  "Node", -- id: 23
+  "Node", -- id: 24
+  "Node", -- id: 25
+  "Node", -- id: 26
+  "Node", -- id: 27
+  "Node", -- id: 28
+  "Node", -- id: 29
+  "Node", -- id: 30
+  "Node", -- id: 31
+  "Node", -- id: 32
+  "Node", -- id: 33
+  "Node", -- id: 34
+  "Node", -- id: 35
+  "Node", -- id: 36
+  "Node"]:
+
+
+#USE "course.lib"
+
+
+VAL INT MaxFanOut IS 5:
+
+VAL INT MaxNodes IS 37:
+
+#INCLUDE "nodes-test-include.occ"
+
+PROC genRange100Points40(CHAN OF BYTE stdin, stdout, stderr)
+
+
+   -- Channel declarations 
+  CHAN OF diam.proto P1.P11,P1.P13,P1.P23,P1.P24:
+  CHAN OF diam.proto P2.P30:
+  CHAN OF diam.proto P3.P4,P3.P6,P3.P7,P3.P33,P3.P37:
+  CHAN OF diam.proto P4.P3,P4.P7,P4.P8,P4.P31,P4.P37:
+  CHAN OF diam.proto P5.P20:
+  CHAN OF diam.proto P6.P3,P6.P7,P6.P22,P6.P33:
+  CHAN OF diam.proto P7.P3,P7.P4,P7.P6,P7.P37:
+  CHAN OF diam.proto P8.P4,P8.P22,P8.P31,P8.P33:
+  CHAN OF diam.proto P9.P10,P9.P15,P9.P21,P9.P39:
+  CHAN OF diam.proto P10.P9,P10.P15,P10.P21,P10.P39:
+  CHAN OF diam.proto P11.P1,P11.P23:
+  CHAN OF diam.proto P12.P16,P12.P22,P12.P28:
+  CHAN OF diam.proto P13.P1,P13.P23,P13.P24,P13.P37:
+  CHAN OF diam.proto P14.P32:
+  CHAN OF diam.proto P15.P9,P15.P10,P15.P21:
+  CHAN OF diam.proto P16.P12,P16.P19,P16.P22,P16.P28:
+  CHAN OF diam.proto P17.P30,P17.P32:
+  CHAN OF diam.proto P18.P38:
+  CHAN OF diam.proto P19.P16,P19.P28:
+  CHAN OF diam.proto P20.P5:
+  CHAN OF diam.proto P21.P9,P21.P10,P21.P15,P21.P28,P21.P39:
+  CHAN OF diam.proto P22.P6,P22.P8,P22.P12,P22.P16,P22.P33:
+  CHAN OF diam.proto P23.P1,P23.P11,P23.P13,P23.P37:
+  CHAN OF diam.proto P24.P1,P24.P13,P24.P35:
+  CHAN OF diam.proto P25.P29,P25.P34,P25.P36:
+  CHAN OF diam.proto P28.P12,P28.P16,P28.P19,P28.P21:
+  CHAN OF diam.proto P29.P25,P29.P34,P29.P36:
+  CHAN OF diam.proto P30.P2,P30.P17:
+  CHAN OF diam.proto P31.P4,P31.P8:
+  CHAN OF diam.proto P32.P14,P32.P17:
+  CHAN OF diam.proto P33.P3,P33.P6,P33.P8,P33.P22:
+  CHAN OF diam.proto P34.P25,P34.P29:
+  CHAN OF diam.proto P35.P24:
+  CHAN OF diam.proto P36.P25,P36.P29:
+  CHAN OF diam.proto P37.P3,P37.P4,P37.P7,P37.P13,P37.P23:
+  CHAN OF diam.proto P38.P18:
+  CHAN OF diam.proto P39.P9,P39.P10,P39.P21:
+
+  -- Channel table declaration for nodes 
+  P1.out IS [ P1.P11,P1.P13,P1.P23,P1.P24 ]:
+  P1.in IS [ P11.P1,P13.P1,P23.P1,P24.P1 ]:
+  P2.out IS [ P2.P30 ]:
+  P2.in IS [ P30.P2 ]:
+  P3.out IS [ P3.P4,P3.P6,P3.P7,P3.P33,P3.P37 ]:
+  P3.in IS [ P4.P3,P6.P3,P7.P3,P33.P3,P37.P3 ]:
+  P4.out IS [ P4.P3,P4.P7,P4.P8,P4.P31,P4.P37 ]:
+  P4.in IS [ P3.P4,P7.P4,P8.P4,P31.P4,P37.P4 ]:
+  P5.out IS [ P5.P20 ]:
+  P5.in IS [ P20.P5 ]:
+  P6.out IS [ P6.P3,P6.P7,P6.P22,P6.P33 ]:
+  P6.in IS [ P3.P6,P7.P6,P22.P6,P33.P6 ]:
+  P7.out IS [ P7.P3,P7.P4,P7.P6,P7.P37 ]:
+  P7.in IS [ P3.P7,P4.P7,P6.P7,P37.P7 ]:
+  P8.out IS [ P8.P4,P8.P22,P8.P31,P8.P33 ]:
+  P8.in IS [ P4.P8,P22.P8,P31.P8,P33.P8 ]:
+  P9.out IS [ P9.P10,P9.P15,P9.P21,P9.P39 ]:
+  P9.in IS [ P10.P9,P15.P9,P21.P9,P39.P9 ]:
+  P10.out IS [ P10.P9,P10.P15,P10.P21,P10.P39 ]:
+  P10.in IS [ P9.P10,P15.P10,P21.P10,P39.P10 ]:
+  P11.out IS [ P11.P1,P11.P23 ]:
+  P11.in IS [ P1.P11,P23.P11 ]:
+  P12.out IS [ P12.P16,P12.P22,P12.P28 ]:
+  P12.in IS [ P16.P12,P22.P12,P28.P12 ]:
+  P13.out IS [ P13.P1,P13.P23,P13.P24,P13.P37 ]:
+  P13.in IS [ P1.P13,P23.P13,P24.P13,P37.P13 ]:
+  P14.out IS [ P14.P32 ]:
+  P14.in IS [ P32.P14 ]:
+  P15.out IS [ P15.P9,P15.P10,P15.P21 ]:
+  P15.in IS [ P9.P15,P10.P15,P21.P15 ]:
+  P16.out IS [ P16.P12,P16.P19,P16.P22,P16.P28 ]:
+  P16.in IS [ P12.P16,P19.P16,P22.P16,P28.P16 ]:
+  P17.out IS [ P17.P30,P17.P32 ]:
+  P17.in IS [ P30.P17,P32.P17 ]:
+  P18.out IS [ P18.P38 ]:
+  P18.in IS [ P38.P18 ]:
+  P19.out IS [ P19.P16,P19.P28 ]:
+  P19.in IS [ P16.P19,P28.P19 ]:
+  P20.out IS [ P20.P5 ]:
+  P20.in IS [ P5.P20 ]:
+  P21.out IS [ P21.P9,P21.P10,P21.P15,P21.P28,P21.P39 ]:
+  P21.in IS [ P9.P21,P10.P21,P15.P21,P28.P21,P39.P21 ]:
+  P22.out IS [ P22.P6,P22.P8,P22.P12,P22.P16,P22.P33 ]:
+  P22.in IS [ P6.P22,P8.P22,P12.P22,P16.P22,P33.P22 ]:
+  P23.out IS [ P23.P1,P23.P11,P23.P13,P23.P37 ]:
+  P23.in IS [ P1.P23,P11.P23,P13.P23,P37.P23 ]:
+  P24.out IS [ P24.P1,P24.P13,P24.P35 ]:
+  P24.in IS [ P1.P24,P13.P24,P35.P24 ]:
+  P25.out IS [ P25.P29,P25.P34,P25.P36 ]:
+  P25.in IS [ P29.P25,P34.P25,P36.P25 ]:
+  P28.out IS [ P28.P12,P28.P16,P28.P19,P28.P21 ]:
+  P28.in IS [ P12.P28,P16.P28,P19.P28,P21.P28 ]:
+  P29.out IS [ P29.P25,P29.P34,P29.P36 ]:
+  P29.in IS [ P25.P29,P34.P29,P36.P29 ]:
+  P30.out IS [ P30.P2,P30.P17 ]:
+  P30.in IS [ P2.P30,P17.P30 ]:
+  P31.out IS [ P31.P4,P31.P8 ]:
+  P31.in IS [ P4.P31,P8.P31 ]:
+  P32.out IS [ P32.P14,P32.P17 ]:
+  P32.in IS [ P14.P32,P17.P32 ]:
+  P33.out IS [ P33.P3,P33.P6,P33.P8,P33.P22 ]:
+  P33.in IS [ P3.P33,P6.P33,P8.P33,P22.P33 ]:
+  P34.out IS [ P34.P25,P34.P29 ]:
+  P34.in IS [ P25.P34,P29.P34 ]:
+  P35.out IS [ P35.P24 ]:
+  P35.in IS [ P24.P35 ]:
+  P36.out IS [ P36.P25,P36.P29 ]:
+  P36.in IS [ P25.P36,P29.P36 ]:
+  P37.out IS [ P37.P3,P37.P4,P37.P7,P37.P13,P37.P23 ]:
+  P37.in IS [ P3.P37,P4.P37,P7.P37,P13.P37,P23.P37 ]:
+  P38.out IS [ P38.P18 ]:
+  P38.in IS [ P18.P38 ]:
+  P39.out IS [ P39.P9,P39.P10,P39.P21 ]:
+  P39.in IS [ P9.P39,P10.P39,P21.P39 ]:
+
+
+  -- Program Body 
+
+  [MaxNodes]CHAN OF BYTE toMux:
+  PAR
+    Node(P1.in, P1.out,0, toMux [0])
+    Node(P2.in, P2.out,1, toMux [1])
+    Node(P3.in, P3.out,2, toMux [2])
+    Node(P4.in, P4.out,3, toMux [3])
+    Node(P5.in, P5.out,4, toMux [4])
+    Node(P6.in, P6.out,5, toMux [5])
+    Node(P7.in, P7.out,6, toMux [6])
+    Node(P8.in, P8.out,7, toMux [7])
+    Node(P9.in, P9.out,8, toMux [8])
+    Node(P10.in, P10.out,9, toMux [9])
+    Node(P11.in, P11.out,10, toMux [10])
+    Node(P12.in, P12.out,11, toMux [11])
+    Node(P13.in, P13.out,12, toMux [12])
+    Node(P14.in, P14.out,13, toMux [13])
+    Node(P15.in, P15.out,14, toMux [14])
+    Node(P16.in, P16.out,15, toMux [15])
+    Node(P17.in, P17.out,16, toMux [16])
+    Node(P18.in, P18.out,17, toMux [17])
+    Node(P19.in, P19.out,18, toMux [18])
+    Node(P20.in, P20.out,19, toMux [19])
+    Node(P21.in, P21.out,20, toMux [20])
+    Node(P22.in, P22.out,21, toMux [21])
+    Node(P23.in, P23.out,22, toMux [22])
+    Node(P24.in, P24.out,23, toMux [23])
+    Node(P25.in, P25.out,24, toMux [24])
+    Node(P28.in, P28.out,25, toMux [25])
+    Node(P29.in, P29.out,26, toMux [26])
+    Node(P30.in, P30.out,27, toMux [27])
+    Node(P31.in, P31.out,28, toMux [28])
+    Node(P32.in, P32.out,29, toMux [29])
+    Node(P33.in, P33.out,30, toMux [30])
+    Node(P34.in, P34.out,31, toMux [31])
+    Node(P35.in, P35.out,32, toMux [32])
+    Node(P36.in, P36.out,33, toMux [33])
+    Node(P37.in, P37.out,34, toMux [34])
+    Node(P38.in, P38.out,35, toMux [35])
+    Node(P39.in, P39.out,36, toMux [36])
+    Mux(toMux,stdout)
+     -- End of program body 
+:

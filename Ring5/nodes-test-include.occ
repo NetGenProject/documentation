@@ -1,0 +1,36 @@
+DATA TYPE diam.proto IS INT:
+
+VAL INT MaxTurns IS 10:
+
+PROC Mux([]CHAN OF BYTE muxTab, CHAN OF BYTE out)
+  BYTE char:  
+  SEQ i=0 FOR  (MaxNodes * MaxTurns)
+    ALT i=0 FOR SIZE muxTab
+      muxTab[i] ? char
+        SEQ 
+          out.number(i,4,out)
+          out ! '*t'
+          out ! char
+          WHILE char <> '*n'
+            SEQ
+              muxTab[i] ? char
+              out ! char
+:
+
+PROC Node([]CHAN OF diam.proto Incoming.Chan,Outgoing.Chan, VAL INT Identity, CHAN OF BYTE To.Mux)  
+  INT Local.Value: 
+  diam.proto Incoming.Value:
+  SEQ
+    Local.Value := Identity
+    SEQ i=0 FOR MaxTurns 
+      SEQ
+        Local.Value := Local.Value +1 -- 1 sensing
+        PAR -- 2 communication
+          Outgoing.Chan[0] ! (diam.proto Local.Value)
+          Incoming.Chan[0] ? Incoming.Value
+        SKIP -- 3 sleeping
+        out.number(Local.Value,0,To.Mux)
+        To.Mux ! '*n'
+        -- trace the value of the local variable
+:
+  

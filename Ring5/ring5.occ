@@ -1,0 +1,68 @@
+
+-- processus : 5
+-- min fanout : 1
+-- max fanout : 1
+-- channels   : 5
+
+
+--generated  at 29 août 2013 15:56:54
+--generic synchronous network model
+--Bernard Pottier. UBO
+
+VAL [5][4]BYTE NetProcess IS [   "Head", -- id: 1
+  "P1  ", -- id: 2
+  "P2  ", -- id: 3
+  "P3  ", -- id: 4
+  "P4  "]:
+
+VAL [5][4]BYTE NetProcedure IS [   "Node", -- id: 1
+  "Node", -- id: 2
+  "Node", -- id: 3
+  "Node", -- id: 4
+  "Node"]:
+
+
+#USE "course.lib"
+
+
+VAL INT MaxFanOut IS 1:
+
+VAL INT MaxNodes IS 5:
+
+#INCLUDE "nodes-test-include.occ"
+
+PROC ring5(CHAN OF BYTE stdin, stdout, stderr)
+
+
+   -- Channel declarations 
+  CHAN OF diam.proto Head.P1:
+  CHAN OF diam.proto P1.P2:
+  CHAN OF diam.proto P2.P3:
+  CHAN OF diam.proto P3.P4:
+  CHAN OF diam.proto P4.Head:
+
+  -- Channel table declaration for nodes 
+  Head.out IS [ Head.P1 ]:
+  Head.in IS [ P4.Head ]:
+  P1.out IS [ P1.P2 ]:
+  P1.in IS [ Head.P1 ]:
+  P2.out IS [ P2.P3 ]:
+  P2.in IS [ P1.P2 ]:
+  P3.out IS [ P3.P4 ]:
+  P3.in IS [ P2.P3 ]:
+  P4.out IS [ P4.Head ]:
+  P4.in IS [ P3.P4 ]:
+
+
+  -- Program Body 
+
+  [MaxNodes]CHAN OF BYTE toMux:
+  PAR
+    Node(Head.in, Head.out,0, toMux [0])
+    Node(P1.in, P1.out,1, toMux [1])
+    Node(P2.in, P2.out,2, toMux [2])
+    Node(P3.in, P3.out,3, toMux [3])
+    Node(P4.in, P4.out,4, toMux [4])
+    Mux(toMux,stdout)
+     -- End of program body 
+:

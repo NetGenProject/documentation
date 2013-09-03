@@ -1,0 +1,39 @@
+DATA TYPE diam.proto IS INT:
+
+VAL INT MaxTurns IS 10:
+
+PROC Mux([]CHAN OF BYTE muxTab, CHAN OF BYTE out)
+  BYTE char:  
+  SEQ i=0 FOR  (MaxNodes * MaxTurns)
+    ALT i=0 FOR SIZE muxTab
+      muxTab[i] ? char
+        SEQ 
+          out.number(i,4,out)
+          out ! '*t'
+          out ! char
+          WHILE char <> '*n'
+            SEQ
+              muxTab[i] ? char
+              out ! char
+:
+
+PROC Node([]CHAN OF diam.proto Incoming.Chan,Outgoing.Chan, VAL INT Identity, CHAN OF BYTE To.Mux)  
+  [MaxFanOut] INT Local.Values:  -- buffers for outgoing messages
+  [MaxFanOut] diam.proto Incoming.Value: -- buffers for incoming
+  INT Local.Value:
+  SEQ
+    Local.Value := Identity
+    SEQ i=0 FOR MaxTurns 
+      SEQ
+        Local.Value := Local.Value +1 -- 1 sensing
+        SEQ i=0 FOR MaxFanOut -- copy our state to outgoing buffers
+          Local.Values[i]:= Local.Value
+        PAR -- 2 communication
+          PAR index = 0 FOR MaxFanOut -- send in parallel
+            Outgoing.Chan[index] ! (diam.proto Local.Values[index])
+          PAR index = 0 FOR MaxFanOut -- receive in parallel
+            Incoming.Chan[index] ? Incoming.Value[index]
+        out.number(Local.Value,0,To.Mux) -- trace some state
+        To.Mux ! '*n'
+:
+  
