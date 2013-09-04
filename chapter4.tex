@@ -20,4 +20,67 @@ and was popularized by Gajski.
 The bottom branch carrying measures produced from tools (energy, 
 response time, cost, etc\ldots).
 
+Simulation is a key method to take measures on complex situations.
+To use simultation, we need to reproduce real dispersion of behaviours,
+and random number generators are useful for this.
 
+\section{Random numbers in Occam}
+
+The Occam {\tt course} library provides the random function that
+has two parameters and provides a result as a couple of numbers
+(integers).
+
+The small program {randomSample.occ}  demonstrates the general use for random.
+
+\begin{lstlisting}  
+#USE "course.lib"
+-- montre le fonctionnement du generateur aleatoire.
+PROC Random(CHAN OF BYTE in,out,err)
+  VAL INT N IS 5: 
+  VAL INT K IS 10:  -- borne de tirage de random : [0,K[
+  PROC Genere(VAL INT seedInitial)
+    INT x,seed:
+    SEQ
+      x,seed:=random(K,seedInitial)
+      SEQ i=0 FOR N
+        SEQ
+          x,seed:=random(K,seed)
+          out.number(x,2,out)
+          out.string("*n",0,out)
+      out.string("___",0,out)
+      out.string("*n",0,out)
+  :
+  
+  SEQ
+    Genere(12)
+    Genere(2)
+    Genere(12) -- la souche est la meme que le premier cas et donne le meme tirage.
+:
+\end{lstlisting}
+
+Compiling ({\tt kroc -lcourse randomSample.occ}), and executing  ({\tt ./randomSample})produces the 
+following trace:
+\begin{lstlisting}./randomSample
+ 1
+ 3
+ 1
+ 8
+ 0
+___
+ 8
+ 9
+ 6
+ 3
+ 4
+___
+ 1
+ 3
+ 1
+ 8
+ 0
+___
+\end{lstlisting}
+
+It is noticeable that the seed value allows to reproduce exactly the same random sequence of numbers.
+Thus, if we are to use this mechanism inside network simulators, we must vary the seed at each node.
+The unique  {\tt Identity} of nodes is a good way to do this.
