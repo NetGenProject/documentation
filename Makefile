@@ -17,6 +17,7 @@ tar:
 	PickPoints3.png \
 	PickPoints2.png \
 	PickPoints1.png \
+	BiDirRing4.png \
 	mekong.png \
 	GridRange200Points40.png \
 	ring5-rogne.pdf \

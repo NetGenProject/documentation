@@ -746,7 +746,7 @@ expressed in the Occam Syntax.
 
 
 
-\chapter {Synchronous behaviours}
+\chapter {Synchronous distributed  behaviours using Occam}
 
 At this point, the installation of kroc, the {\sl Kent Research Occam Compiler}
 should be considered. The first section will detail how to proceed on a Linux
@@ -1560,6 +1560,20 @@ MyLinuxBox $ ./BiDirRing4 | head -6
 Verify that you can produce a trace for an 8 nodes bidirectional ring
 for the same behaviour..
 
+
+\subsection {Exercise }
+
+BiDirRing4 is not a good demonstration of cooperation between nodes
+since the program ignores values in incoming messages. A step forward
+would be to compute mean of a value distributed in the neighborhood:
+
+\begin{itemize}
+\item modify BiDirRing4 to send a local value to the direct neigbors
+\item receive values from the neigbors and compute the mean of these values
+including the local one.
+\item repeat the process for neighborhoods of 5 nodes inside the ring.
+Do  a trace analysis.
+\end{itemize}
 
 
 \tableofcontents
