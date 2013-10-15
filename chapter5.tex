@@ -200,17 +200,114 @@ to produce large description as 80~000 buildings set.
 \item start a fresh image and ensure that the NetGen package is loaded with one of the last
 version (1.28.1.2.5 should work)
 \item open the store dialog from VisualWorks main window
-\item select GoogleMap package (we need to change this name)
-\item select version 1.15.5.2 or later, and type load from the pop-up menu
-
-\item
-This comment is as follows: 
-Display maps from tile servers, like Google Map or OpenStreetMap.
+\item select MapAccess package (in the future, likely to be merged with the map browser)
+\item select version 1.6 or later, and type load from the pop-up menu
+\item open a system browser, look for the MapAccess package, and the comments 
+for this package. It is a button in the middle of the browser window. 
+This comment looks like the following sentences:
+\\
+\emph{Display maps from tile servers, like Google Map or OpenStreetMap.
 Georeference points on the map.
 Display objects from shapefiles. 
 Library is located here: http://wsn.univ-brest.fr/MapAccess/library/libShapeFile.tar. Run 'make' to compile it. 
 BMO shapefile is located here: http://wsn.univ-brest.fr/MapAccess/bmo/. Copy the two files shp and shx in the same directory. 
+}
 
+This comment is likely to change, but we will keep location allowing to download 
+software for the package: dynamic libraries compiled for Linux and MacOSX, and 
+shapefiles for Brest. We do not support Window currently. 
 
+\item in your working directory, download the libraries: \\
+\verb!wget http://wsn.univ-brest.fr/MapAccess/library/libShapeFile.tar!. 
+\\
+Desarchive the tar file by doing tar xf libShapeFile.tar. 
+\item and download the two shapefiles: 
+\\
+\verb!wget http://wsn.univ-brest.fr/MapAccess/bmo/bati-WGS84.shp! 
+\\ and \\ 
+\verb!wget http://wsn.univ-brest.fr/MapAccess/bmo/bati-WGS84.shx!. 
+\\
+(ftp, curl, or any web browser can do similar work)
 \end{itemize}
+
+\subsection{Checking the configuration}
+
+To check the installation, it is best to open a system browser on class 
+ShapefileReader (figure \ref{fig:configBrowserShp}). 
+This class uses directly the public domain library 
+for assessing file conforming to the shapefile format. 
+It translates external definitions into objects to be displayed 
+on a derivative of the map browser interface. 
+
+\begin{figure}
+\begin{center}
+\includegraphics[width=8cm]{config-browser-shp.png}
+\caption{Path configuration for the dynamic libraries}
+\label{fig:configBrowserShp}
+\end{center}
+\end{figure}
+
+It can be necessary to adapt the two directories for includeDirectories, 
+for libraryDirectories to the platform, observing that a regeneration can be 
+possible based on this public software. 
+
+
+\subsection{Interface opening}
+By selecting the Tools menu from the main window, then choosing "Universite... MapAccess"
+the new interface opens. This interface is quite similar to the map navigation interface, at 
+the exception at the left column. Having the interface open, by clicking 
+Reset values, then Refresh map, we obtain a default view on Brest city 
+(figure \ref{fig:mapAccessMainWindow}). 
+
+\begin{figure}
+\begin{center}
+\includegraphics[width=10cm]{mapAccessWindow.png}
+\caption{Brest presentation before loading a shapefile}
+\label{fig:mapAccessMainWindow}
+\end{center}
+\end{figure}
+
+\subsection{Loading shapefile}
+
+The button Open shapefile brings a dialog where a .shx file must be selected 
+The figure \ref{fig:mapAccessFilled} shows Brest city map with 
+more than 80~000 buildings represented as polyline 2D objects. 
+
+\begin{figure}
+\begin{center}
+\includegraphics[width=10cm]{mapAccessFilled.png}
+\caption{Brest presentation once the shapefile is loaded}
+\label{fig:mapAccessFilled}
+\end{center}
+\end{figure}
+
+\subsection{Browsing the city}
+
+The capabilities of the map browser exists in this preliminary tool. 
+As exemple, one can zoom and move the display view changing the level 
+of details. The geographic coordinates being preserved, it is possible 
+to focus very precise situations to enable simulations and computations. 
+See figures \ref{fig:mapAccessGMap} and \ref{fig:mapAccessOSM}. 
+
+\begin{figure}
+\begin{center}
+\includegraphics[width=10cm]{mapAccessPenfeldGMap.png}
+\caption{Brest university and river Penfeld after loading BMO shapefile, 
+Google Maps}
+\label{fig:mapAccessGMap}
+\end{center}
+\end{figure}
+
+\begin{figure}
+\begin{center}
+\includegraphics[width=10cm]{mapAccessPenfeldOSM.png}
+\caption{The same view as for figure \ref{fig:mapAccessGMap}, using OpenStreetMap.}
+\label{fig:mapAccessOSM}
+\end{center}
+\end{figure}
+
+Switching between map layout is possible using a dialog installed 
+under the cache control button. This dialog also allows to empty a cache 
+used in the present software to speed up access to distant map tiles. 
+
 
