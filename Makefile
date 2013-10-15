@@ -5,6 +5,8 @@ pdf: DocNetGen.tex
 tar:
 	tar cvzf netgenDoc.tgz \
 	Makefile \
+	chapter4.tex \
+	chapter5.tex \
 	DocNetGen.aux \
 	DocNetGen.log \
 	DocNetGen.pdf \
