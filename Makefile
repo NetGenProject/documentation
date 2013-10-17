@@ -7,6 +7,7 @@ tar:
 	Makefile \
 	chapter4.tex \
 	chapter5.tex \
+	chapter6.tex \
 	DocNetGen.aux \
 	DocNetGen.log \
 	DocNetGen.pdf \
