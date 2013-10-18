@@ -376,6 +376,8 @@ latLonToMeter: lat lon: lon
 \end{lstlisting}
 
 Then, we have to find the tile corresponding of the (x, y) coordinates. 
+First, we compute pixel coordinates on the map, from the (x, y) coordinates. 
+The formula in Smalltalk langage is given below. 
 
 \begin{lstlisting}
 meterToPixel: xy zoom: zoom
@@ -388,6 +390,8 @@ meterToPixel: xy zoom: zoom
 	py := (my + self originShift) / res.
 	^px @ py
 \end{lstlisting}
+
+As we know 
 
 \subsection{Accuracy}
 
