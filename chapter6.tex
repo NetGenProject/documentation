@@ -51,7 +51,7 @@ changes from simulation.
 
 \begin{figure}[hbtp]
 \begin{center} 
-\includegraphics[width=10cm] {mux4-st.pdf}
+\includegraphics[width=10cm] {mux4-st.eps}
 \caption{System organization between simulator and graphical interface}
 \label{fig:mux4-st}
 \end{center}
@@ -67,7 +67,7 @@ to the i/o stream of this process.
 \begin{lstlisting}
   PROC Smalltalk(   CHAN OF BYTE in , out , err )
 
-    VAL [2][] BYTE Prog IS [ "/usr/local/vw7.8.1nc/bin/linux86/visual", "./visualnc.im                          " ]:
+    VAL [2][] BYTE Prog IS [ "/usr/local/vw7.8.1nc/bin/linux86/visual", "./visualnc.im" ]:
     VAL []BYTE arg IS  "./visualCuda.im":
     [2][100] BYTE Prog2 :
     [1]ENVIRONMENT envArray:
