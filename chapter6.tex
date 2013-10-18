@@ -32,19 +32,32 @@ a message.
 It is noticeable that the small networlk at the bottom left is finished, while le big network 
 is still revealing information.
 
-This section will explain how the simulation, and even real messages from real sensors
-can interact with the graphic view.
-
 
 \begin{figure}[hbtp]
 \begin{center}
 \leavevmode 
-\includegraphics{netSimul.png}
+\includegraphics[width=12cm] {netSimul.png}
 \caption{Feed back from concurrent simulation to Map Browser interface}
 \label{fig:netSimul}
 \end{center}
 \end{figure}
  
+
+This section will explain how the simulation, and even real messages from real sensors
+can interact with the graphic view. Figure \ref{fig:mux4-st} presents the system organization, with
+messages multiplexed to an Occam relay for an external process running Smalltalk.
+In the Smalltalk image, messages are decoded and actions are taken to display visually
+changes from simulation.
+
+\begin{figure}[hbtp]
+\begin{center} 
+\includegraphics[width=10cm] {mux4-st.pdf}
+\caption{System organization between simulator and graphical interface}
+\label{fig:mux4-st}
+\end{center}
+\end{figure}
+ 
+
 \subsection{Calling back the GUI}
 
 The architecture description code source need support from an Occam mechanism allowing 
