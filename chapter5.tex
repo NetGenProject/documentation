@@ -328,6 +328,24 @@ In that sense, the building computation explained in section \ref{sec:mapAccess}
 is just a particular case of a general process. 
 Network presentation and activities, mobiles moving on their path are other cases.
 
+\subsection{Tiles of the base map}
+
+The map is divided into tiles, which are the same size 
+(a square of side 256 pixels in our application). 
+When we put together adjacent tiles, we can build the map of an entire zone. 
+The system of tiles can be represented as a pyramid, according to the zoom level. 
+At zoom zero, there is only one tile, at zoom one, there are 4 tiles, 
+at zoom 2, 16 tiles. 
+The computation of the number N of tiles given a zoom level Z is as follow: 
+\[N = 2 ^ Z .\] 
+ 
+The tiles are retrieved from a tile server, like Google map or OpenStreetMap. 
+They are downloaded by http client, the url gives the position of the tile over 
+the map, and the zoom level. 
+
+Tiles are portion of map, with a zoom level 
+which gives more or less details on the area covered. 
+
 \subsection{The projection question}
 
 The Earth is spherical, whereas maps are printed on a plane surface. 
@@ -335,22 +353,50 @@ The method which is used to transform spherical coordinates into orthogonal coor
 is called projection. 
 
 
-
 One question to be considered in the first rank is how a 3D topology can be represented 
 on a 2D surface. This is called the projection system, and one being used on most of the 
 Map Access software is Spherical Mercator. 
 For this application, this projection transforms geodetic coordinates (longitude and latitude) 
 in meters. Thus, the global map is projected into a square, which is divided into tiles. 
-Tiles have the same size, usually 256x256 pixels. The zoom level defines the number of tiles produced. 
+Tiles have the same size, usually $256 \times 256$ pixels. 
+The zoom level defines the number of tiles produced. 
 At zoom 0, there is only one tile, at zoom 1 there are 4 tiles, etc... 
-The formula 
+There is a formula to convert spherical coordinates (longitude and latitude, expressed in degree) 
+into orthogonal coordinates (x and y, expressed in metres). 
+The formula to convert from one sytem to the other is as follow :
 
-The map is retrieved from a tile server. Tiles are portion of map, with a zoom level
+\begin{lstlisting}
+latLonToMeter: lat lon: lon
+
+	| mx my |
+	mx := lon * self originShift / 180.0.
+	my := ((90 + lat) * Double pi / 360.0) tan ln / (Double pi / 180.0).
+	my := my * self originShift / 180.0.
+	^mx @ my
+\end{lstlisting}
+
+Then, we have to find the tile corresponding of the (x, y) coordinates. 
+
+\begin{lstlisting}
+meterToPixel: xy zoom: zoom
+
+	| mx my res px py |
+	res := self resolution: zoom.
+	mx := xy x.
+	my := xy y.
+	px := (mx + self originShift) / res.
+	py := (my + self originShift) / res.
+	^px @ py
+\end{lstlisting}
 
 \subsection{Accuracy}
 
-The GPS device has a maximal accuracy of 5 m. The coordinates are given with 7 decimals. 
-In order to make correct computation with this, we used fixed-point 
+The GPS device has a maximal accuracy of 5 m, thus the coordinates are given with 7 decimals. 
+A small error in coordinates can lead to several metre shifts on the map.   
+In order to achieve correct calculus with this, we used fixed-point computation in Smalltalk. 
+Thus, the results are not rounded, which increase accuracy. 
+In figure \ref{fig:tripGPS}, we can discern the both sides of the street, 
+those data was provided by a 5-m accuracy GPS, which is the maximum reachable for civilian use. 
 
 \begin{figure}
 \begin{center}
@@ -359,7 +405,8 @@ In order to make correct computation with this, we used fixed-point
 the path of the car where the tool was installed is printed in blue, 
 the bus stops are indicated by the yellow pins.
 The GPS is accurate enough to discern the both side of the street.}
-\label{fig:mapAccessOSM}
+\label{fig:tripGPS}
 \end{center}
 \end{figure}
+
 
