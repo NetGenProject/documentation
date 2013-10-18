@@ -19,11 +19,11 @@ version (1.28.1.2.5 should work)
 \item select version 1.15.5.2 or later, and type load from the pop-up menu
 \end{itemize}
 
-The initial window displays as show figure \ref{fig:initialGmap}. 
+The initial window displays as shown figure \ref{fig:initialGmap}. 
 
 \begin{figure}
 \begin{center} 
-\includegraphics[width=8cm]{gmap.png}
+\includegraphics[width=10cm]{gmap.png}
 \caption{Initial view on the map browser: the right part displays tiles from the map 
 from public servers. The left column displays geographic information and allows 
 to control network presentation. }
@@ -32,7 +32,7 @@ to control network presentation. }
 \end{figure}
 
 \section{Moving on the map}
-A predefined position is visible inside the xtile and ytile fields 
+A predefined position is visible inside the \verb!xtile! and \verb!ytile! fields 
 in the left column of the browser. Just below, a zoom factor is also provided. 
 Whatever are these values, by pushing the refresh map button, the browser 
 will download geographic information to be presented in the graphic pane. 
@@ -56,7 +56,7 @@ where a sensor network is setup or planned.
 
 \begin{figure}
 \begin{center}
-\includegraphics[width=8cm]{soummam0.png}
+\includegraphics[width=10cm]{soummam0.png}
 \caption{The browser is pointing to a North Africa river where sensors are to be installed
 for water observations.}
 \label{fig:initialSoummam}
@@ -118,7 +118,7 @@ for display figure \ref{fig:soummam1}.
 
 \begin{figure}
 \begin{center}
-\includegraphics[width=8cm]{soummam1.png}
+\includegraphics[width=12cm]{soummam1.png}
 \caption{The browser is pointing to a North Africa river where sensors are to be installed
 for water observations.}
 \label{fig:soummam1}
@@ -164,7 +164,7 @@ for further use: building simulation, graph drawing (see figure \ref{fig:soummam
 
 \begin{figure}
 \begin{center}
-\includegraphics[width=8cm]{netgenSoummam.png}
+\includegraphics[width=12cm]{netgenSoummam.png}
 \caption{Netgen window with El Kseur specification and statistic. }
 \label{fig:soummamNetgen}
 \end{center}
@@ -193,7 +193,7 @@ from outside concurrent execution.
 
 
 \section{Loading building architectures}
-
+\label{sec:mapAccess}
 The package concerned with building representations is MapAccess one, also available from 
 the same store server as for chapter \ref{sec:chapter1}. 
 
@@ -238,7 +238,7 @@ Desarchive the tar file by doing tar xf libShapeFile.tar.
 \subsection{Checking the configuration}
 
 To check the installation, it is best to open a system browser on class 
-ShapefileReader (figure \ref{fig:configBrowserShp}). 
+\verb!ShapefileReader! (figure \ref{fig:configBrowserShp}). 
 This class uses directly the public domain library 
 for assessing file conforming to the shapefile format. 
 It translates external definitions into objects to be displayed 
@@ -246,7 +246,7 @@ on a derivative of the map browser interface.
 
 \begin{figure}
 \begin{center}
-\includegraphics[width=8cm]{config-browser-shp.png}
+\includegraphics[width=12cm]{config-browser-shp.png}
 \caption{Path configuration for the dynamic libraries}
 \label{fig:configBrowserShp}
 \end{center}
@@ -266,7 +266,7 @@ Reset values, then Refresh map, we obtain a default view on Brest city
 
 \begin{figure}
 \begin{center}
-\includegraphics[width=10cm]{mapAccessWindow.png}
+\includegraphics[width=12cm]{mapAccessWindow.png}
 \caption{Brest presentation before loading a shapefile}
 \label{fig:mapAccessMainWindow}
 \end{center}
@@ -280,7 +280,7 @@ more than 80~000 buildings represented as polyline 2D objects.
 
 \begin{figure}
 \begin{center}
-\includegraphics[width=10cm]{mapAccessFilled.png}
+\includegraphics[width=12cm]{mapAccessFilled.png}
 \caption{Brest presentation once the shapefile is loaded}
 \label{fig:mapAccessFilled}
 \end{center}
@@ -296,7 +296,7 @@ See figures \ref{fig:mapAccessGMap} and \ref{fig:mapAccessOSM}.
 
 \begin{figure}
 \begin{center}
-\includegraphics[width=10cm]{mapAccessPenfeldGMap.png}
+\includegraphics[width=12cm]{mapAccessPenfeldGMap.png}
 \caption{Brest university and river Penfeld after loading BMO shapefile, 
 Google Maps}
 \label{fig:mapAccessGMap}
@@ -305,7 +305,7 @@ Google Maps}
 
 \begin{figure}
 \begin{center}
-\includegraphics[width=10cm]{mapAccessPenfeldOSM.png}
+\includegraphics[width=12cm]{mapAccessPenfeldOSM.png}
 \caption{The same view as for figure \ref{fig:mapAccessGMap}, using OpenStreetMap.}
 \label{fig:mapAccessOSM}
 \end{center}
@@ -315,4 +315,51 @@ Switching between map layout is possible using a dialog installed
 under the cache control button. This dialog also allows to empty a cache 
 used in the present software to speed up access to distant map tiles. 
 
+
+\section{Algorithms}
+
+\subsection{Layers}
+
+The information displayed in this application is divided in two layers : the base map, 
+provided by a map server, and the network, locally computed. 
+More generally, displaying is composing an image from several information sources. 
+The composition is understood as a projection of differents layers. 
+In that sense, the building computation explained in section \ref{sec:mapAccess}
+is just a particular case of a general process. 
+Network presentation and activities, mobiles moving on their path are other cases.
+
+\subsection{The projection question}
+
+The Earth is spherical, whereas maps are printed on a plane surface. 
+The method which is used to transform spherical coordinates into orthogonal coordinates 
+is called projection. 
+
+
+
+One question to be considered in the first rank is how a 3D topology can be represented 
+on a 2D surface. This is called the projection system, and one being used on most of the 
+Map Access software is Spherical Mercator. 
+For this application, this projection transforms geodetic coordinates (longitude and latitude) 
+in meters. Thus, the global map is projected into a square, which is divided into tiles. 
+Tiles have the same size, usually 256x256 pixels. The zoom level defines the number of tiles produced. 
+At zoom 0, there is only one tile, at zoom 1 there are 4 tiles, etc... 
+The formula 
+
+The map is retrieved from a tile server. Tiles are portion of map, with a zoom level
+
+\subsection{Accuracy}
+
+The GPS device has a maximal accuracy of 5 m. The coordinates are given with 7 decimals. 
+In order to make correct computation with this, we used fixed-point 
+
+\begin{figure}
+\begin{center}
+\includegraphics[width=12cm]{trip2.png}
+\caption{A trip in Brest city, along a bus line, with a GPS data logger : 
+the path of the car where the tool was installed is printed in blue, 
+the bus stops are indicated by the yellow pins.
+The GPS is accurate enough to discern the both side of the street.}
+\label{fig:mapAccessOSM}
+\end{center}
+\end{figure}
 
