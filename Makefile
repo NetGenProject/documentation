@@ -1,5 +1,7 @@
 
-pdf: DocNetGen.tex
+pdf: DocNetGen.tex DocNetGen.bib chapter6.tex chapter7.tex
+	bibtex DocNetGen
+	pdflatex DocNetGen.tex
 	pdflatex DocNetGen.tex
 
 tar:
