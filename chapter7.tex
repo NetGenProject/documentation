@@ -110,7 +110,7 @@ shape where each cell has 6 direct neighbours.
 further networks definition.
 
 This tool reuse the {\sl Picking} framework presented Figure  \ref{fig:PickPoint1}. Beside the capability
-to load images, and specify sensor positions, there is the abaility to install a rectangular grid over the
+to load images, and specify sensor positions, there is the ability to install a rectangular grid over the
 image.
 
 
@@ -123,4 +123,48 @@ Following the application, it is possible to specify $x  \times   y$ grids with 
 \end{center}
 \end{figure}
 
+Having split the image into cells, it is now possible to classify thems around common properties.
+
+\begin{figure}[hbtp]
+\begin{center} 
+\includegraphics[width=10cm]{SenegalGetGridCell.png}
+\caption{Rectangular grid, and sensor geometry specification. The Edit Menu {\sl Get Grid Cell} allows to go a step forward in the flow
+to group cell togethers and form {\sl regions} of interest. Section \ref{sec:classification}}
+\label{fig:SenegalGetGridCell}
+\end{center}
+\end{figure}
+
+\section { Grouping block into classes}
+\label{sec:classification} 
+
+From the menu shown Figure  \ref{fig:SenegalGetGridCell}, we obtain a new tool for region
+specification and manipulation. As for the grid in segmentation, a new parameter allows to divide
+the cell space according to pixel distributions.The choice of group distribution  can be more or less sophisticated.
+To start by the begining, the following algorithm is applied to the whole cell grid, to obtain a set of $min, max, mean$ parameters
+on each colour :
+
+\begin{lstlisting}  
+STEP 1
+	for each cell in the grid
+		for each pixel in the cell 
+			 for each colour component in { R, G, B}
+				 update (min(colour))
+				 update (max(colour))
+				 update (sum(colour))
+		 for each colour component in { R, G, B}
+			 update (mean(colour))
+\end{lstlisting}
+
+Following this step, we have $3 \times 3$ parameters set in each cell, thus allowing to compute
+global image characteristics that will reflect the efficiency of the preprocessing:
+
+\begin{lstlisting}  
+STEP 2
+	for each cell in the grid
+		for each colour component in { R, G, B}
+			update(minGlobal)
+			update(maxGlobal)
+			update(minMeanGlobal)
+			update(maxMeanGlobal)
+\end{lstlisting}
 
