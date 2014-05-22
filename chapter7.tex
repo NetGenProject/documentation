@@ -1,6 +1,9 @@
 
 \chapter{Image analysis} 
  
+{\sl The associated software is available in the Pickcell package pn Store at http://wsn.univ-brest.fr}
+
+
 Creation of sensing machines working in the environment necessitate 
 a validation of in the context of physical scenarios. Some of these 
 scenario are flooding, insect clouds, pollutions, fires.
@@ -136,6 +139,7 @@ to group cell togethers and form {\sl regions} of interest. Section \ref{sec:cla
 
 \section { Grouping block into classes}
 \label{sec:classification} 
+\subsection { Computing statistics}
 
 From the menu shown Figure  \ref{fig:SenegalGetGridCell}, we obtain a new tool for region
 specification and manipulation. As for the grid in segmentation, a new parameter allows to divide
@@ -168,3 +172,60 @@ STEP 2
 			update(maxMeanGlobal)
 \end{lstlisting}
 
+
+\begin{figure}[hbtp]
+\begin{center} 
+\includegraphics[width=6cm]{RGBDiagram.png}
+\caption{From the preprocessing results shown Figure \ref,{fig:colours1+2},   we can guess min(colour), max(colour) for each
+component in Red Green Blue.}
+\label{fig:RGBDiagram}
+\end{center}
+\end{figure}
+
+After this step and for each component in RGB space, we have global $[min,max] $ measures for:
+
+\begin{itemize}
+\item the value taken over the image (see Figure \ref{fig:RGBDiagram} )
+\item the mean of values in each cell
+\end{itemize}
+
+
+
+\subsection { Grouping cell together }
+
+We can use the values computed in each cell and globally to group cell togethers. For the minimum
+and the maximum, and even the mean in each cell, a simple algorithm is as follows:
+
+\begin{lstlisting}  
+STEP3
+	decide on a partition in N>1
+	for each component in RGB
+		discard any value out side the  [min,max]   interval found for the component
+		produce N adjacent sub intervals   [min,max]  
+\end{lstlisting}
+
+In the case of $N=2$ the RGB min, max, or mean values in each cell will allow to {\sl classify}
+each cell in an unique way in a $2^3$ interval space $(R_0,R_1) \times (G_0,G_1) \times (B_0,B_1) $.
+The {\sl cube} of coordinates go from $0,0,0= 0$ to $1,1,1= 7$.
+By selecting {\sl Get grid cell} shown Figure \ref{fig:SenegalGetGridCell} the classification tool appears.
+
+What does this too is to allow the selection of $N$, then each cell is tne image is assigned to an interval
+depending on its values. By selecting codes as defined above, the corresponding regions appear
+an part of the original image. 
+
+
+\begin{lstlisting}  
+STEP4
+	for each interval allocate a collection to record cells pertaining to this interval
+	for each cell in the grid record the cell in its interval with the geographic position
+\end{lstlisting}
+
+
+\begin{figure}[hbtp]
+\begin{center} 
+\includegraphics[width=8cm]{Senegal5x5code0.png}
+\caption{Class browser displaying the region corresponding to code 0 : lowes interval in each component of R, G, B.
+Shore and rivers appear as dark cell when the minimum criteria are selected. The partition is N=2.}
+\label{fig:Senegal5x5code0}
+\end{center}
+\end{figure}
