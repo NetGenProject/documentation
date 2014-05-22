@@ -54,7 +54,7 @@ A general flow to obtain such regions, is :
 Following this flow, higher level objects can be obtained, still with geographical definition in the case of
 maps, or satellite imagery.
 
-\section {Image preparation }
+\section {Preprocessing for image preparation }
 
 In the cas of maps, geographic information is yet presented in a comprehensive way. However analyzing maps is still useful
 to obtain information without the direct contact of an initial information system.
@@ -91,10 +91,36 @@ and the modified image, with a better use of the value range in the second case
 \includegraphics[width=6cm]{senegalColours2.png} 
 \end{center}
 \end{minipage}
-
-
-\caption{Colour parameters for the left original picture, and its adaptation (right)}
+\caption{RGB colour statistics for the left original picture, and its adaptation (right). The software
+is Apple iPhoto, standard to any MacOs computer. Similar functions could be obtained from Linux GIMP,
+and probably reimplemented from a Palette tool in NetGen.}
 \label{fig:colours1+2}
 \end{center}
 \end{figure}
   
+\section { Segmenting the image}
+
+To obtain regions, it is necessary to group zones of the image based on similarities of different kind.
+The first operation is a fragmentation into blocks of different size and geometry. Of course,
+squares, or rectangles are the simplest way to proceed, but other fragmentation techniques could also
+be suitable and ease further stages in simulation. Cellular automata propose as example  an hexagonal
+shape where each cell has 6 direct neighbours.
+
+{\sc PickCell} has been implemented (and is till implemented to ease this fragmentation, in relation with 
+further networks definition.
+
+This tool reuse the {\sl Picking} framework presented Figure  \ref{fig:PickPoint1}. Beside the capability
+to load images, and specify sensor positions, there is the abaility to install a rectangular grid over the
+image.
+
+
+\begin{figure}[hbtp]
+\begin{center} 
+\includegraphics[width=10cm]{SenegalGrid10x10.png}
+\caption{Using a 10@10 grid, the image is split into $10\times10$ pixels. 
+Following the application, it is possible to specify $x  \times   y$ grids with $x  \neq  y$.}
+\label{fig:SenegalGrid10x10}
+\end{center}
+\end{figure}
+
+
