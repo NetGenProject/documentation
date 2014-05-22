@@ -17,10 +17,6 @@ Analysis follows a conventional flow, starting from a picture coming from source
 photographies, maps, radar images, to obtain regions of interests, on which physical simultaion will
 take place.
 
-An example of processing on such regions has been deveopped with cellular automata
-reproducing fire expansions on region havaing some vegetations (shown Figure \ref{fig:AhmedFire},
-movie demonstration and report \cite{AhmedFire}).
-
 
 \begin{figure}[hbtp]
 \begin{center} 
@@ -31,13 +27,74 @@ vegetation, burning, ashes.}
 \end{center}
 \end{figure}
 
+An example of processing on such regions are cellular automata
+reproducing fire expansions of phenomenons consuming characteristics such as the existence od enough vegetation;;
+Figure \ref{fig:AhmedFire} is extracted from a
+movie demonstration where "fires" are started randomly to "eat" such vegetation report \cite{AhmedFire}. The
+work was achieved on an Nvidia GPU.
+
+
 \section{General flow}
+
+Thus,   modeling  physical regions automatically, or semi-automatically, following physical process 
+characteristics, is certainly critical to lead both physical and control network  simulations jointly,
+and synchronously. One can think of this as a sampling technique of the physical process sharing
+a clock with the sensing network. Cellular automata are one way to implement the real world simulation,
+starting from initial states and regions.
+
+
+A general flow to obtain such regions, is :
+\begin{enumerate}
+\item  preprocessing  images 
+\item segmenting images into blocks
+\item recognition of similar cells and grouping into regions
+\item processing regions an obtaining skeleton images
+\end{enumerate}
+
+Following this flow, higher level objects can be obtained, still with geographical definition in the case of
+maps, or satellite imagery.
+
+\section {Image preparation }
+
+In the cas of maps, geographic information is yet presented in a comprehensive way. However analyzing maps is still useful
+to obtain information without the direct contact of an initial information system.
+More difficult is the case of satellite or plane images, because the contract between objects necessitate
+pre processing. Figure \ref{fig:sideBySide} shows an example of procesing achieved using common tools
+for management of photographies. The initial view is a satellite image (left), while the right part displays an improved
+view, with better contrasts.
 
 \begin{figure}[hbtp]
 \begin{center} 
 \includegraphics[width=10cm]{SenegalSideBySide.png}
-\caption{Modifying original image for better contrasts or coulour selections}
+\caption{Modifying original image for better contrasts or coulour selections. Image is a satellite view from Google Maps.}
 \label{fig:sideBySide}
+\end{center}
+\end{figure}
+
+These representations are coming from a very common image processing software 
+allowing to change contrasts and colour mapping to fit tne necessity of the recognition.
+Image processing paramers show the Red Green Blue statistic values in the original
+and the modified image, with a better use of the value range in the second case
+(Figure \ref{fig:colours1+2}).
+
+
+
+\begin{figure}[hbtp]
+\begin{center}
+\leavevmode 
+\begin{minipage}{6cm}
+\begin{center} 
+\includegraphics[width=6cm]{senegalColours.png} 
+\end{center}
+\end{minipage}~~~~~~~~~\begin{minipage}{6cm}
+\begin{center} 
+\includegraphics[width=6cm]{senegalColours2.png} 
+\end{center}
+\end{minipage}
+
+
+\caption{Colour parameters for the left original picture, and its adaptation (right)}
+\label{fig:colours1+2}
 \end{center}
 \end{figure}
   
