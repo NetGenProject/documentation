@@ -32,6 +32,13 @@ in chapter \ref{sec:chapter1} will apply to access the software:
 \item select last version, and type load from the pop-up menu
 \end{itemize}
 
+\subsection{Short presentation}
+
+Figure 
+\ref{fig:initialQuickMapBrest} shows a view on a QuickMap windowi with a number
+of control button on the left, and map display on the right.
+
+
 \begin{figure}
 \begin{center}
 \includegraphics[width=10cm]{QuickMapSatBrest.png}
@@ -41,5 +48,19 @@ the hand cursor. The sensor wheel controls depth in the map system, here OpenStr
 \label{fig:initialQuickMapBrest}
 \end{center}
 \end{figure}
+
+The movie proposed at  {\tt http://wsn.univ-brest.fr/QuickMap/} is a sequence representing 
+the current tool status:
+
+\begin{description}
+\item  [Moving the map ]: shows horizontal and vertical moves on an OpenStreetMap map system. 
+\item [Launching GPredict  ]: external software that allows to select satellite and pipe informations to QuickMap. 
+\item [Following Satellite ]: these values are collected and presented on QuickMap, the red ball figures the selected satellite. 
+\item [Specification of a sensor field]: some sensors are positioned in front of the satellite path.
+\item [Building networks ]: build button ask computation of edges representing communication links establishment and disconnection.
+\item [Network synthesis ]: using the old version of the browser, the communication ranges can be modified, then the problem is passed to NetGen for simulatioon (CUDA).
+\item [System simulation ]:  satellite and sensors work together, synchronously. The distributed program start at the same step
+on the ground and in the air. Bounding box for controlled sensor systems are computed and displayed.
+\end{description}
 
 
