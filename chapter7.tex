@@ -1,11 +1,18 @@
 
-\chapter{Image analysis} 
+\chapter{PickCell: from image analysis to physical simulation} 
  
-{\sl The associated software is available in the Pickcell package pn Store at http://wsn.univ-brest.fr}
+{\sl The associated software is available in the Pickcell package pn Store at http://wsn.univ-brest.fr.
+Use is similar to \ref{sec:chapter5bis} explanations: 
+\begin{itemize}
+\item load pickcell, then load a file image from the application window,
+\item load quickmap, then select the quickmap pickcell variant from tool menu, to enable
+pickcell from an OpenStreetMap.
+\end{itemize}
+.}
 
 
 Creation of sensing machines working in the environment necessitate 
-a validation of in the context of physical scenarios. Some of these 
+a validation  in the context of physical scenarios. Some of these 
 scenario are flooding, insect clouds, pollutions, fires.
 
 The focus of this chapter are tools and methods allowing to produce inputs
@@ -17,25 +24,27 @@ itself.
 
 The interest of image anlysis is to produce regions that share similar characteristics.
 Analysis follows a conventional flow, starting from a picture coming from sources such as
-photographies, maps, radar images, to obtain regions of interests, on which physical simultaion will
+photographies, maps, radar images, to obtain regions of interests, on which physical simulation  will
 take place.
 
 
 \begin{figure}[hbtp]
 \begin{center} 
 \includegraphics[width=10cm]{AhmedFire.png}
-\caption{Fire simulation (or locust expansion) using Cellular Automata implementing  states such as:
+\caption{Example of a fire simulation  using Cellular Automata that have  states such as:
 vegetation, burning, ashes.}
 \label{fig:AhmedFire}
 \end{center}
 \end{figure}
 
-An example of processing on such regions are cellular automata
-reproducing fire expansions of phenomenons consuming characteristics such as the existence od enough vegetation;;
+A reference for processing on such regions are cellular automata
+reproducing fire expansions of phenomenonsconsuming vegetation.
 Figure \ref{fig:AhmedFire} is extracted from a
-movie demonstration where "fires" are started randomly to "eat" such vegetation report \cite{AhmedFire}. The
-work was achieved on an Nvidia GPU.
+movie demonstration where "fires" are started randomly to "eat" such vegetation report \cite{AhmedFire}. This
+preliminary work was achieved on an Nvidia GPU.
 
+The chapter will provide details on the production of   systems representing the physical
+process working in harmony with the sensing systems.
 
 \section{General flow}
 
@@ -46,13 +55,21 @@ a clock with the sensing network. Cellular automata are one way to implement the
 starting from initial states and regions.
 
 
-A general flow to obtain such regions, is :
+A general flow to obtain such regions, is (figure \ref{fig:pickcellFlow}) :
 \begin{enumerate}
 \item  preprocessing  images 
 \item segmenting images into blocks
 \item recognition of similar cells and grouping into regions
 \item processing regions an obtaining skeleton images
 \end{enumerate}
+
+\begin{figure}[hbtp]
+\begin{center} 
+\includegraphics[width=6cm]{pickcellFlow.png}
+\caption{Preparing cellular automata from image analysis: synthesis flow.}
+\label{fig:AhmedFire}
+\end{center}
+\end{figure}
 
 Following this flow, higher level objects can be obtained, still with geographical definition in the case of
 maps, or satellite imagery.
