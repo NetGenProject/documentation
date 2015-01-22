@@ -259,3 +259,132 @@ Shore and rivers appear as dark cell when the minimum criteria are selected. The
 \label{fig:Senegal5x5code0}
 \end{center}
 \end{figure}
+
+\section{Cell system synthesis}
+\subsection { Weaving a  network }
+
+Given a cell system produced from a class, grouping several classes, or from a whole image, 
+we can now consider to produce a process organization. Taking one node, there are many way to decide
+which neighbours are visible, and this task can appear simple if we use a connexion pattern.
+Cellular automata use these patterns to define neighborhood.
+
+Examples of neighborhood are Von Neumann cross, or Moore square. Mathematical morphology
+methods allow these neighborhood to be arbitrary shapes. As an example two line segments
+could figure a plane in the sky.
+
+
+\begin{figure}[hbtp]
+\begin{center} 
+\includegraphics[width=10cm]   {VonNeumann.png}
+\caption{Von Neumann and Moore neigborhood with distance = 1}
+\label{fig:VonNeumann}
+\end{center}
+\end{figure}
+
+To build a cell system, the class is swept, row by row, column by column.
+For each existing cell, a process is created.
+
+In a second stage,   the class is again swept cell by cell.
+For each cell C,   the neighborhood positions  are searched   inside the class.
+For each existing neighbour, links are established with the center C.
+This way a network of celles is weaved according to the neighborhood
+and the class geometric organization. Figure \ref{fig:classBrowser}
+displays the Cell class browser with choice of standard neighborhhod at the bottom.
+
+
+
+
+\begin{figure}[hbtp]
+\begin{center} 
+\includegraphics[width=10cm]{classBrows+Loc+mask.png}
+\caption{Segmented image and its distribution into classes, code 0 selected.
+Picture shows a cross cursor above one of the cell ant the location of the cell.
+This cell has neighbours at North, South, East and West, and thus has a full Von Neumann neighborhood.
+However a Moore neighborhood would be incomplete due to cells lacking in the north}
+\label{fig:classBrowser}
+\end{center}
+\end{figure}
+
+\subsection {Programs generation }
+
+Once the network is built, programs can be produced to represent its process and topology.
+Menu in the cell class list has a {\sl Build net} option for this (figure \ref{fig:generatingCellNetwork}.
+The results are produced in NetGen windows available as shown figure  \ref{fig:cellNetworkSample}.
+There is atmost 4 processes in the fanout for each cell, and isolated process are removed.
+The abstrac network is described as shown below~:
+\begin{lstlisting}
+cellNetwork0
+
+messages none  defined. 
+Px23y8 { Px22y8, Px23y9, Px24y8, Px23y7 } CellNode (23 @ 8) (20)
+Px20y10 { Px20y9, Px20y11, Px21y10, Px19y10 } CellNode (20 @ 10) (20)
+Px17y7 { Px17y6, Px16y7, Px17y8, Px18y7 } CellNode (17 @ 7) (20)
+Px12y8 { Px12y9, Px12y7, Px13y8, Px11y8 } CellNode (12 @ 8) (20)
+...
+\end{lstlisting}
+
+
+In this text, each process is named using its position, as example $Px23y8$ is located at
+row 8, columns 23. The name of the procedure executed is CellNode() to distinguish with Node()
+used inside sensor networks. Positions and range also appear at the end of the line.
+
+
+\begin{figure}[hbtp]
+\begin{center} 
+\includegraphics[width=12cm]{cellNetworkSample.png}
+\caption{Screencast showing the abstract specification of a generated network for code 0 class.
+One process per line, as for sensor networks.}
+\label{fig:generatingCellNetworkk}
+\end{center}
+\end{figure}
+
+Statistics show that fanout is limited to four, fanin at least equal to 1. There are 177 cells.
+Occam (and CUDA) process systems have been produced by the generator that need
+behaviour description for cella. This behaviour can be very standard transition rule
+for cellular automata, but networking behaviuor could apply as well:
+
+\begin{itemize}
+\item diameter computation : longest distance between cells,
+\item leaders : for naming and differentiating subnetworks
+\item routing tables : to reach any cell from any cell in the same network
+\item packet transport and delivery, etc\ldots
+\end{itemize}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
