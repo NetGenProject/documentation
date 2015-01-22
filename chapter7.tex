@@ -2,31 +2,44 @@
 \chapter{PickCell: from image analysis to physical simulation} 
  
 {\sl The associated software is available in the Pickcell package pn Store at http://wsn.univ-brest.fr.
-Use is similar to \ref{sec:chapter5bis} explanations: 
+Use is similar to  chapter  \ref{sec:chapter5bis} explanations: 
 \begin{itemize}
-\item load pickcell, then load a file image from the application window,
+\item load pickcell, then load a file image from the application window seleted from Tool menu,
 \item load quickmap, then select the quickmap pickcell variant from tool menu, to enable
-pickcell from an OpenStreetMap.
+pickcell from an OpenStreetMap view.
 \end{itemize}
-.}
+}
 
 
 Creation of sensing machines working in the environment necessitate 
 a validation  in the context of physical scenarios. Some of these 
 scenario are flooding, insect clouds, pollutions, fires.
 
-The focus of this chapter are tools and methods allowing to produce inputs
-for physical  simulations. These simulations are compute intensive. It is expected
-that they could be achieved using discrete computation models such as
-cellular automata. It is expected that they will cooperate with network simulations
-in various ways: production of stimuli on sensors, or dangers for the sensor network
-itself.
+The focus of this chapter are tools and methods allowing to produce inputs and  organizations
+for physical  simulations. These simulation involve lot of computations. A  choice
+is to use  space and time  discrete  models such as
+cellular automata. It is also expected that physical simulation  will cooperate with network simulations
+in various ways: production of stimuli on sensors, or  modificaton  of the sensor network 
+itself. Figure \ref{fig:physics+sensorsFlow} displays the general scenario with
+the left branch being discussed here.
 
-The interest of image anlysis is to produce regions that share similar characteristics.
-Analysis follows a conventional flow, starting from a picture coming from sources such as
+
+
+\begin{figure}[hbtp]
+\begin{center} 
+\includegraphics[width=6cm]{physics+sensorsFlow.png}
+\caption{General flow for simulation with the physical simulation and the network simulation.
+Both share coordination  informations such as geographical or geometrical points, clocking system,
+and they can be coordinated during the simulation.}
+\label{fig:physics+sensorsFlow}
+\end{center}
+\end{figure}
+
+
+The interest of image anlysis is to  produce sets of  regions that share similar characteristics.
+Analysis follows a conventional flow, starting from a picture comin from
 photographies, maps, radar images, to obtain regions of interests, on which physical simulation  will
 take place.
-
 
 \begin{figure}[hbtp]
 \begin{center} 
@@ -38,7 +51,7 @@ vegetation, burning, ashes.}
 \end{figure}
 
 A reference for processing on such regions are cellular automata
-reproducing fire expansions of phenomenonsconsuming vegetation.
+reproducing fire expansions of phenomenon consuming  vegetation.
 Figure \ref{fig:AhmedFire} is extracted from a
 movie demonstration where "fires" are started randomly to "eat" such vegetation report \cite{AhmedFire}. This
 preliminary work was achieved on an Nvidia GPU.
@@ -46,7 +59,7 @@ preliminary work was achieved on an Nvidia GPU.
 The chapter will provide details on the production of   systems representing the physical
 process working in harmony with the sensing systems.
 
-\section{General flow}
+\section{Image processing  flow for cellular system synthesis}
 
 Thus,   modeling  physical regions automatically, or semi-automatically, following physical process 
 characteristics, is certainly critical to lead both physical and control network  simulations jointly,
@@ -55,7 +68,7 @@ a clock with the sensing network. Cellular automata are one way to implement the
 starting from initial states and regions.
 
 
-A general flow to obtain such regions, is (figure \ref{fig:pickcellFlow}) :
+A general flow to obtain such regions  is  shown figure \ref{fig:pickcellFlow}~:
 \begin{enumerate}
 \item  preprocessing  images 
 \item segmenting images into blocks
@@ -67,18 +80,18 @@ A general flow to obtain such regions, is (figure \ref{fig:pickcellFlow}) :
 \begin{center} 
 \includegraphics[width=6cm]{pickcellFlow.png}
 \caption{Preparing cellular automata from image analysis: synthesis flow.}
-\label{fig:AhmedFire}
+\label{fig:pickcellFlow}
 \end{center}
 \end{figure}
 
 Following this flow, higher level objects can be obtained, still with geographical definition in the case of
 maps, or satellite imagery.
 
-\section {Preprocessing for image preparation }
+\subsection {Preprocessing for image preparation }
 
-In the cas of maps, geographic information is yet presented in a comprehensive way. However analyzing maps is still useful
-to obtain information without the direct contact of an initial information system.
-More difficult is the case of satellite or plane images, because the contract between objects necessitate
+In the case of maps, geographic information is yet presented in a comprehensive way. However analyzing maps is still useful
+to obtain information without the direct contact of an initial information system (GIS).
+More difficult is the case of satellite or air  images, because the synthesis of objects necessitate
 pre processing. Figure \ref{fig:sideBySide} shows an example of procesing achieved using common tools
 for management of photographies. The initial view is a satellite image (left), while the right part displays an improved
 view, with better contrasts.
@@ -118,7 +131,7 @@ and probably reimplemented from a Palette tool in NetGen.}
 \end{center}
 \end{figure}
   
-\section { Segmenting the image}
+\subsection { Segmenting the image into cells}
 
 To obtain regions, it is necessary to group zones of the image based on similarities of different kind.
 The first operation is a fragmentation into blocks of different size and geometry. Of course,
@@ -126,8 +139,8 @@ squares, or rectangles are the simplest way to proceed, but other fragmentation 
 be suitable and ease further stages in simulation. Cellular automata propose as example  an hexagonal
 shape where each cell has 6 direct neighbours.
 
-{\sc PickCell} has been implemented (and is till implemented to ease this fragmentation, in relation with 
-further networks definition.
+{\sc PickCell} has been implemented     to ease this fragmentation, in relation with 
+further networks synthesis operations.
 
 This tool reuse the {\sl Picking} framework presented Figure  \ref{fig:PickPoint1}. Beside the capability
 to load images, and specify sensor positions, there is the ability to install a rectangular grid over the
@@ -154,9 +167,9 @@ to group cell togethers and form {\sl regions} of interest. Section \ref{sec:cla
 \end{center}
 \end{figure}
 
-\section { Grouping block into classes}
+\subsection { Grouping cells  into classes}
 \label{sec:classification} 
-\subsection { Computing statistics}
+\subsubsection { Computing statistics}
 
 From the menu shown Figure  \ref{fig:SenegalGetGridCell}, we obtain a new tool for region
 specification and manipulation. As for the grid in segmentation, a new parameter allows to divide
@@ -208,7 +221,7 @@ After this step and for each component in RGB space, we have global $[min,max] $
 
 
 
-\subsection { Grouping cell together }
+\subsubsection { Grouping cell together }
 
 We can use the values computed in each cell and globally to group cell togethers. For the minimum
 and the maximum, and even the mean in each cell, a simple algorithm is as follows:
@@ -241,7 +254,7 @@ STEP4
 \begin{figure}[hbtp]
 \begin{center} 
 \includegraphics[width=12cm]{Senegal5x5code0.png}
-\caption{Class browser displaying the region corresponding to code 0 : lowes interval in each component of R, G, B.
+\caption{Pixel class  browser displaying the region corresponding to code 0 : lowes interval in each component of R, G, B.
 Shore and rivers appear as dark cell when the minimum criteria are selected. The partition is N=2, code is 0, for (R=1,G=1,B=1).}
 \label{fig:Senegal5x5code0}
 \end{center}
