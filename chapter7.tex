@@ -296,7 +296,7 @@ displays the Cell class browser with choice of standard neighborhhod at the bott
 
 \begin{figure}[hbtp]
 \begin{center} 
-\includegraphics[width=10cm]{classBrows+Loc+mask.png}
+\includegraphics[width=12cm]{classBrows+Loc+mask.png}
 \caption{Segmented image and its distribution into classes, code 0 selected.
 Picture shows a cross cursor above one of the cell ant the location of the cell.
 This cell has neighbours at North, South, East and West, and thus has a full Von Neumann neighborhood.
@@ -305,13 +305,20 @@ However a Moore neighborhood would be incomplete due to cells lacking in the nor
 \end{center}
 \end{figure}
 
+\begin{figure}[hbtp]
+\begin{center} 
+\includegraphics[width=8cm]{generatingCellNetwork.png}
+\caption{Calling the network generator on a cell class}
+\label{fig:generatingCellNetwork}
+\end{center}
+\end{figure}
 \subsection {Programs generation }
 
 Once the network is built, programs can be produced to represent its process and topology.
 Menu in the cell class list has a {\sl Build net} option for this (figure \ref{fig:generatingCellNetwork}.
 The results are produced in NetGen windows available as shown figure  \ref{fig:cellNetworkSample}.
 There is atmost 4 processes in the fanout for each cell, and isolated process are removed.
-The abstrac network is described as shown below~:
+The abstract network is described as shown below~:
 \begin{lstlisting}
 cellNetwork0
 
@@ -334,7 +341,7 @@ used inside sensor networks. Positions and range also appear at the end of the l
 \includegraphics[width=12cm]{cellNetworkSample.png}
 \caption{Screencast showing the abstract specification of a generated network for code 0 class.
 One process per line, as for sensor networks.}
-\label{fig:generatingCellNetworkk}
+\label{fig:cellNetworkSample}
 \end{center}
 \end{figure}
 
@@ -350,6 +357,19 @@ for cellular automata, but networking behaviuor could apply as well:
 \item packet transport and delivery, etc\ldots
 \end{itemize}
 
+\subsection {Compiling and simulating }
+
+The shortest path to simulate is to reuse a sensor network Occam behaviour file,
+as example for leader and diameter dynamic computation. The Actions menu
+of NetGen window allows to do it (figure \ref{fig:NetGenAlgo}).
+
+\begin{figure}[hbtp]
+\begin{center} 
+\includegraphics[width=12cm]{NetGenAlgoFile.png}
+\caption{Selection of include files: for  behaviour, and also for data files holding the cell contents.}
+\label{fig:NetGenAlgo}
+\end{center}
+\end{figure}
 
 
 
