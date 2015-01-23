@@ -459,6 +459,22 @@ Therefore we have two networks of leaders 803 and 808, and diameters 84 and 197.
 Any information circulating in the second network will use less than 197 hops to
 reach a destination.
 
+All the algorithms  are not equivalent. See table \ref{tab:uneTableBench} showing a comparison between A and B.
+
+\begin{table}[htb]
+\begin{center}
+\begin{tabular}{|l|l|l|}\hline 
+time &  A & B \\\hline
+real &  5m24.271s &     0m9.843s\\\hline
+user &  5m40.865s &     0m28.074s\\\hline
+sys  &  0m0.686s  &     0m0.674s\\\hline
+\end{tabular}
+\caption{ Two programs A and B executed on the same network. A is for naive
+leader and diameter computations. B is for diameter computation saving useless
+data transmission. }
+\label{tab:uneTableBench}
+\end{center}
+\end{table}
 
 
 
