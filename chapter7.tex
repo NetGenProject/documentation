@@ -371,11 +371,93 @@ of NetGen window allows to do it (figure \ref{fig:NetGenAlgo}).
 \end{center}
 \end{figure}
 
+Once this is done, the action flow is asfollow:
+\begin{enumerate}
+\item Check coherency between behaviour file and architecture file: in particular the name of the
+procedures executed by processes must be the same. For this example, it is CellNode(),
+defined in {\sl cellnodes-test-include-diam.occ}.
+\item Compile architecture. As example :\\
+kroc -lcourse cellNetwork17.occ
+\item Check the execution trace.
+\end{enumerate}
 
 
+\section {An illustration :  Antsiranana geography capture and analysis }
+
+\begin{figure}[hbtp]
+\begin{center} 
+\includegraphics[width=10cm]{diego-split-10x10.png}
+\caption{Google map API3 was used to select Antsiranana bay and feed PickCell : $10 \times 10$ pixel cells.}
+\end{center}
+\end{figure}
+
+\subsection {Sample : Antsiranana  cell classification  }
+
+We then select one pixel space and generate networks. and graph for neighborhood VonNeumann 1
+The graph seems to present a single network, isn't it?
+\begin{figure}[hbtp]
+\begin{center} 
+\includegraphics[width=10cm]{diego-class17-3.png}
+\caption{The pixel space was split into 27 subspaces.}
+\end{center}
+\end{figure}
 
 
+\begin{figure}[hbtp]
+\begin{center} 
+\includegraphics[width=12cm]{diegoGraph17.png}
+\caption{Resultinglogic  graph for Von Neumann1 neighborhood.}
+\end{center}
+\end{figure}
 
+\subsection{ Neighborhood statistics}
+
+The four standatd neighborhood were selected in turns. Statistics came from the NetGen window
+after accepting the different network (table \ref{tab:uneCATable}).
+
+
+\begin{table}[htb]
+\begin{center}
+\begin{tabular}{|l|l|ll|l||}\hline
+cellNetwork17 & VN1 &   VN2 &   M1 &    M2\\\hline
+processus  &    809 &   809 &   809 &   809\\\hline
+min fanout  &   1 &     3 &     2 &     6\\\hline
+max fanout  &   4 &     12 &    8 &     22\\\hline
+isolated    &   0 &     0 &     0 &     0\\\hline
+channels    &   2440 &  6346 &  4576 &  10962\\\hline
+\end{tabular}
+\caption{ Four different neighborhood generated for Antsiranana bay with distances 1 and 2.
+the table show  cell  networks characteristics. }
+\label{tab:uneCATable}
+\end{center}
+\end{table}
+
+
+\subsection{ Trace and execution }
+
+Once the program is compiled, we can launch an execution, with more than 800 processes
+working together. The program compute the leader Id, and the diameter of network(s).
+The trace coming from execution has the following contents:
+
+\begin{lstlisting}
+ 784	  84 803
+   2	  84 803
+   5	  84 803
+...
+ 803	  84 803
+ 668	 197 808
+   0	 197 808
+   1	 197 808
+...
+
+ 806	 197 808
+ 807	 197 808
+ 808	 197 808
+\end{lstlisting}
+
+Therefore we have two networks of leaders 803 and 808, and diameters 84 and 197.
+Any information circulating in the second network will use less than 197 hops to
+reach a destination.
 
 
 
