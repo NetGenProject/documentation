@@ -27,7 +27,7 @@ the left branch being discussed here.
 
 \begin{figure}[hbtp]
 \begin{center} 
-\includegraphics[width=6cm]{physics+sensorsFlow.png}
+\includegraphics[width=8cm]{physics+sensorsFlow.png}
 \caption{General flow for simulation with the physical simulation and the network simulation.
 Both share coordination  informations such as geographical or geometrical points, clocking system,
 and they can be coordinated during the simulation.}
@@ -37,14 +37,14 @@ and they can be coordinated during the simulation.}
 
 
 The interest of image anlysis is to  produce sets of  regions that share similar characteristics.
-Analysis follows a conventional flow, starting from a picture comin from
+Analysis follows a conventional flow, starting from a picture coming  from
 photographies, maps, radar images, to obtain regions of interests, on which physical simulation  will
 take place.
 
 \begin{figure}[hbtp]
 \begin{center} 
 \includegraphics[width=10cm]{AhmedFire.png}
-\caption{Example of a fire simulation  using Cellular Automata that have  states such as:
+\caption{Example of a fire simulation  using Cellular Automata  cells that have  states such as:
 vegetation, burning, ashes.}
 \label{fig:AhmedFire}
 \end{center}
@@ -346,8 +346,8 @@ One process per line, as for sensor networks.}
 \end{figure}
 
 Statistics show that fanout is limited to four, fanin at least equal to 1. There are 177 cells.
-Occam (and CUDA) process systems have been produced by the generator that need
-behaviour description for cella. This behaviour can be very standard transition rule
+Occam (and CUDA) process systems have been produced by the generator that  still need
+behaviour description for  their  cella. This behaviour can be very standard transition rule
 for cellular automata, but networking behaviuor could apply as well:
 
 \begin{itemize}
@@ -368,6 +368,7 @@ of NetGen window allows to do it (figure \ref{fig:NetGenAlgo}).
 \includegraphics[width=12cm]{NetGenAlgoFile.png}
 \caption{Selection of include files: for  behaviour, and also for data files holding the cell contents.}
 \label{fig:NetGenAlgo}
+\label{fig:includeFiles}
 \end{center}
 \end{figure}
 
@@ -388,6 +389,7 @@ kroc -lcourse cellNetwork17.occ
 \begin{center} 
 \includegraphics[width=10cm]{diego-split-10x10.png}
 \caption{Google map API3 was used to select Antsiranana bay and feed PickCell : $10 \times 10$ pixel cells.}
+\label{fif:sampleAntsiranana}
 \end{center}
 \end{figure}
 
@@ -395,10 +397,12 @@ kroc -lcourse cellNetwork17.occ
 
 We then select one pixel space and generate networks. and graph for neighborhood VonNeumann 1
 The graph seems to present a single network, isn't it?
+
 \begin{figure}[hbtp]
 \begin{center} 
 \includegraphics[width=10cm]{diego-class17-3.png}
-\caption{The pixel space was split into 27 subspaces.}
+\caption{The pixel  space was split into 27 subspaces  defining classes.}
+\label{fig:antisrananaClass17}
 \end{center}
 \end{figure}
 
@@ -406,7 +410,8 @@ The graph seems to present a single network, isn't it?
 \begin{figure}[hbtp]
 \begin{center} 
 \includegraphics[width=12cm]{diegoGraph17.png}
-\caption{Resultinglogic  graph for Von Neumann1 neighborhood.}
+\caption{Resulting   logic  graph for Von Neumann1 neighborhod.  How many subgraphs  ? see section \ref{sec:comment} }
+\label{fig:ansirananaGraph}
 \end{center}
 \end{figure}
 
@@ -418,14 +423,14 @@ after accepting the different network (table \ref{tab:uneCATable}).
 
 \begin{table}[htb]
 \begin{center}
-\begin{tabular}{|l|l|ll|l||}\hline
+\begin{tabular}{|l|l|l|l|l||}\hline
 cellNetwork17 & VN1 &   VN2 &   M1 &    M2\\\hline
 processus  &    809 &   809 &   809 &   809\\\hline
 min fanout  &   1 &     3 &     2 &     6\\\hline
 max fanout  &   4 &     12 &    8 &     22\\\hline
 isolated    &   0 &     0 &     0 &     0\\\hline
 channels    &   2440 &  6346 &  4576 &  10962\\\hline
-neighborhood   &   4 &  12 &  8 &  22\\\hline
+neighborhood size  &   4 &  12 &  8 &  22\\\hline
 \end{tabular}
 \caption{ Four different neighborhood generated for Antsiranana bay with distances 1 and 2.
 the table show  cell  networks characteristics. }
@@ -435,6 +440,7 @@ the table show  cell  networks characteristics. }
 
 
 \subsection{ Trace and execution }
+\label{sec:antsiranan}
 
 Once the program is compiled, we can launch an execution, with more than 800 processes
 working together. The program compute the leader Id, and the diameter of network(s).
@@ -480,33 +486,219 @@ data transmission. }
 \end{center}
 \end{table}
 
+\section{Neighborhood discovery and isotropy}
+
+As for computer networks,  cellular automata built from analysis have irregularities:
+
+\begin{itemize}
+\item shape are  produced from classes, and shapes have frontiers. That means that
+if a Von Neumann neighborhood was taken as a connectivity pattern, cells do not have
+complete neighborhood.
+\item another problem comes from this lack of completion: how can we guess the direction addressed
+by a link array ? Which link lead to where ?
+\begin{itemize}
+\item in the physical world links do not really exist, but direction can be significant,
+\item cellular automata can be isotropic, or anisotropic, making directions critical
+in transition rules.
+\end{itemize}
+\end{itemize}
+
+
+
+
+Figure \ref{fig:antisrananaClass17} display a shore obtained from a map system.
+As discussed in section \ref{sec:antsiranan} the cell network is distributed into
+two parts showing diameters as large as 197 cell paths. If we are to model the effect
+of a particular wind on surface tides, we need to know the direction available at each
+cell point.
+
+Thus local connectivity discovery is needed. As for sensor networks, it is interesting
+to maintain connectivity knowledge  dynamically, and thus, during simulation.
+
+ \subsection {Neighbourhood data structures explained }
+
+The element of Occam coding below allows to see what will append. Basically there
+is a descriptor for each detected neighbour. These descriptors will be stored
+in a dynamic table, and a redefinition of link protocol allows to pass these tokens
+on communication links (abstract, of course).
+
+\begin{lstlisting}  
+DATA TYPE KnownNeighbour
+  RECORD
+    INT Id: -- node identity
+    INT linkIndex:  -- index of link
+    Location relativeLoc: -- xLoc yLoc record
+:
+DATA TYPE Neighbourhood
+  RECORD
+    INT limit: -- to manage table size
+    [MaxFanOut] KnownNeighbour knownNeighbour:
+:
+PROTOCOL diam.proto
+  CASE
+    null; BYTE
+    file; FileOfId
+    int; INT
+    location; KnownNeighbour -- for neighbour discovery
+:
+\end{lstlisting}
+
+
+
+Initially each cell has its Id and absolute location stored in a KnownNeighbour
+record. The problem is to fill the Neighbourhood table with elements coming
+from connected cells.
+
+
+
+ \subsection {Neighbourhood   discovery }
+
+In our synchronous simulation frame work, this is a single exchange step
+followed by the local building of the neighbourhood table.
+
+
+\begin{lstlisting}
+PROC GetNeighbourhood()
+  KnownNeighbour me:
+  [MaxFanOut] KnownNeighbour them: 
+  SEQ
+    GetLocation() -- into Location variable loc
+    me[Id] := Id  -- Cell Identity
+    me[linkIndex] := -1 
+    me[relativeLoc] := loc -- absolute location
+    PAR
+      PAR j=0 FOR SIZE inChan
+        inChan[j] ? CASE
+          location ; them[j]   -- get tokens from neighbours
+            SKIP 
+      PAR j=0 FOR SIZE outChan
+        outChan[j] ! location ; me -- send our token
+    ResetNeighbourhood(myNeighbours)
+    SEQ i=0 FOR SIZE inChan
+      SEQ
+        them[i][linkIndex] := i --recall link index
+        AddInNeighbourhood(loc, them[i],myNeighbours)
+         -- add a neighbour and translate absolute to relative location
+    DumpNeighbourhood(me, myNeighbours, toMux)  -- trace
+:
+\end{lstlisting}
+
+\subsection {Trace and comment }
+
+This code was added to previous sample, and few lines were extracted.
+During the discovery phasis, each node report its identity, its position, then 
+the neighborhood table.
+
+The elements extracted all refers to node 482  located at $x= 32, y=53$.
+This node has a full VN1 neighborhood with cardinal directions $ N, E, S,  W$
+mapped to link $ 3 , 1, 0, 2$. North is relative coordinates $(0,1)$, West is $(-1, 0)$.
+The coordinate system see the origin in $(0,0)$ being at top left of an image.
+
+The name of this cell is Px32y53, and its network diameter is 197.
+Notice that cell of Id 479 has an incomplete neighbourhood reduced to 3 cells.
+
+\begin{lstlisting}
+./cellNetwork17 | grep 482
+248 32 54 { 3 0; 0, 1}{ 57 1; 1, 0}{ 245 2; -1, 0}{ 482 3; 0, -1}
+306 33 53 { 57 0; 0, 1}{ 380 1; 0, -1}{ 482 2; -1, 0}{ 741 3; 1, 0}
+479 31 53 { 245 0; 0, 1}{ 482 1; 1, 0}{ 564 2; 0, -1}
+482 32 53 { 248 0; 0, 1}{ 306 1; 1, 0}{ 479 2; -1, 0}{ 575 3; 0, -1}
+575 32 52 { 380 0; 1, 0}{ 482 1; 0, 1}{ 564 2; -1, 0}{ 580 3; 0, -1}
+482 Px32y53:
+482  197
+\end{lstlisting}
+
+We can interpret the trace according to table \ref{tab:cardialAndIndex}. and \label{tab:cardialAndIndex479}.
+\begin{table}[htb]
+\begin{center}
+\begin{tabular}{|l|l|l|}\hline
+direction & vector & link index \\\hline
+N  &  ( 0, -1) &   3 \\\hline
+W  &   ( -1 ,  0 ) &   2  \\\hline
+S  &  ( 0, 1) & 0   \\\hline
+E  &  ( 1, 0 ) &   1 \\\hline
+\end{tabular}
+\caption{Node 482 relations between link index and cardinal directions. }
+\label{tab:cardialAndIndex}
+\end{center}
+\end{table}
+
+
+\begin{table}[htb]
+\begin{center}
+\begin{tabular}{|l|l|l|}\hline
+direction & vector & link index \\\hline
+N  &  ( 0, -1) &   2 \\\hline 
+S  &  ( 0, 1) & 0   \\\hline
+E  &  ( 1, 0 ) &   1 \\\hline
+\end{tabular}
+\caption{Node 479 relations between link index and cardinal directions. Uncomplete VN1 neighbourhood. }
+\label{tab:cardialAndIndex479}
+\end{center}
+\end{table}
+
+
+
+
+\section { Accessing cell data}
+
+How we can obtain access to cell data produced during image analysis. Look inside
+the data file produced as shown figure s \ref{fig:NetGenAlgo} and \ref{fig:generatingCellNetwork}.
+
+\subsection {Data structures }
+
+The data structure appearing in top of the data file are as follows:
+\begin{lstlisting}
+DATA TYPE ImageExtent -- cell dimension
+  RECORD
+    INT width:
+    INT height:
+:
+DATA TYPE CellPosition
+  RECORD
+    INT x:
+    INT y:
+:
+DATA TYPE RGBPixel -- RGB pixel
+  RECORD
+    BYTE red, green, blue:
+:
+-- generated description of one cell, size hard coded
+DATA TYPE Depth24ByteArray  IS [ 100] RGBPixel:
+-- this is a cell image contents with dimensions and contents
+DATA TYPE CellImage
+  RECORD
+    ImageExtent  extent:
+    Depth24ByteArray pixelArray:
+:
+-- this is a complete cell, with its position and data
+DATA TYPE CellArray
+  RECORD
+    CellPosition position:
+    CellImage image:
+:
+-- this is data for one class, 810 cells for this one
+VAL [   810] CellArray  Cells IS  -- follows a table of cell contents
+-- pages of values
+\end{lstlisting}
+
+
+\subsection {From cell data to cellular automata local state }
+
+(to be continued)
 
 
 
 
 
 
+\section { Comments}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+\begin{figure}[hbtp]
+\begin{center} 
+\includegraphics[width=12cm]{Diego2Networks.pdf}
+\caption{View on the logic graph..}
+\label{fig:antisrananaClass17bis}
+\end{center}
+\end{figure}
 
