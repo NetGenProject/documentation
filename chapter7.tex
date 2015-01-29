@@ -383,7 +383,7 @@ kroc -lcourse cellNetwork17.occ
 \end{enumerate}
 
 
-\section {An illustration :  Antsiranana geography capture and analysis }
+\section {Physical cell system illustration :  Antsiranana geography capture and analysis }
 
 \begin{figure}[hbtp]
 \begin{center} 
@@ -446,6 +446,7 @@ Once the program is compiled, we can launch an execution, with more than 800 pro
 working together. The program compute the leader Id, and the diameter of network(s).
 The trace coming from execution has the following contents:
 
+
 \begin{lstlisting}
  Id	diam	leader
  784	  84 803
@@ -457,19 +458,38 @@ The trace coming from execution has the following contents:
    0	 197 808
    1	 197 808
 ...
-
- 806	 197 808
- 807	 197 808
- 808	 197 808
 \end{lstlisting}
 
-Therefore we have two networks of leaders 803 and 808, and diameters 84 and 197.
-Any information circulating in the second network will use less than 197 hops to
+\begin{table}[htb]
+\begin{center}
+\begin{tabular}{|l|l|l|}\hline
+identity  & diameter  & leader \\\hline
+ 784&	  84& 803\\\hline
+   2	&  84 &803\\\hline
+   5	&  84 &803\\\hline
+... & .. & ..\\\hline
+ 803&	  84& 803\\\hline
+ 668&	 197& 808\\\hline
+   0	& 197& 808\\\hline
+   1	& 197& 808\\\hline
+... & .. & ..\\\hline
+ 806	& 197& 808\\\hline
+ 807	& 197& 808\\\hline
+ 808	& 197& 808\\\hline
+\end{tabular}
+\caption{Simulation trace: smallest networks (84-803)  finish first in the case of Occam execution.
+It is not the case for CUDA execution. }
+\label{tab:uneTableTrace}
+\end{center}
+\end{table}
+
+Therefore we have two {\sl cell networks } of leaders 803 and 808, and diameters 84 and 197.
+Any information circulating in the second network will use at most 197 hops to
 reach a destination.
 
 All the algorithms  are not equivalent. See table \ref{tab:uneTableBench} showing a comparison between A and 
 running on a multicore i7 CPU. It is noticeable that B has a strong advantage and a higher level
-of effective parallelism (user row).
+of effective parallelism (see the user row).
 
 \begin{table}[htb]
 \begin{center}
